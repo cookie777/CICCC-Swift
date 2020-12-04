@@ -21,11 +21,13 @@ class ViewController: UIViewController {
 
     func updateUI() {
         view.backgroundColor = lightOn ? .white : .black
+        
     }
     
     @IBAction func buttonPressed(_ sender: Any) {
         lightOn.toggle()
         updateUI()
     }
+
 }
 

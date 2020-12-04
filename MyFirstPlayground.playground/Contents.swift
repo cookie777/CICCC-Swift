@@ -1,24 +1,61 @@
 
 import UIKit
-
-//var str = "Hello, playground"
-//let country = "Canada"
 //
-//print(str, country)
-//print(123)
+//class Parent{
+//    var v1 : Int = 6
+//    var v2 : String = "8ee"
 //
-//func case1(_ num: Int) -> Int{
-//    return (num+100)
+////    init(v1: Int, v2: String){
+////        self.v1 = v1
+////        self.v2 = v2
+////    }
+//
+//    func m1(){
+//        print("pm1")
+//        print("pm2")
+//    }
+//
 //}
 //
-//print(case1(1))
+//class Child: Parent{
+//    var v3: Double
+//    init(v3: Double) {
+//        self.v3 = v3
+////        super.init(v1: 3, v2: "4sd")
+//    }
+//
+//    override func m1() {
+////        super.m1()
+//        print("cm1")
+////        print(super.m1())
+//    }
+//}
+//
+////var p = Parent(v1: 5, v2 : "3")
+//var c = Child( v3:3.2)
+//c.v1
+//c.m1()
 
+//print(c.v1)
 
-let a: Int = 12
-let b: Double = 5
+class Person {
+  var name: String =  "aaa"
+    
+    init() {
+        name = "bbbb"
+    }
 
-print(Double(a)/b)
-
-if a == 12 && b == 5{
-    print("sss")
+  init(name: String) {
+    self.name = name
+  }
 }
+
+class Student: Person {
+  var favoriteSubject: String
+    
+  init(favoriteSubject: String) {
+    self.favoriteSubject = favoriteSubject
+//    super.init(name: "")
+  }
+}
+
