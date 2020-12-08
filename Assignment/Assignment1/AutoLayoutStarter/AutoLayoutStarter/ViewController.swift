@@ -9,20 +9,16 @@
 import UIKit
 
 class ViewController: UIViewController {
-    
-    
-//    Set main view object as computed variable
+
   let mainView: UIView = {
     let main = UIView()
-    // important when setting contraints programmatically
     main.translatesAutoresizingMaskIntoConstraints = false
     main.backgroundColor = .green
     return main
-  }()
-    
-    
+  }() // immediately invoked closure / function
   
   let squareButton: UIButton = {
+    
     let butt = UIButton(type: .system)
     butt.setTitle("Square", for: .normal)
     butt.translatesAutoresizingMaskIntoConstraints = false
@@ -48,11 +44,69 @@ class ViewController: UIViewController {
     butt.addTarget(self, action: #selector(landscapeTapped), for: .touchUpInside)
     return butt
   }()
+  
+  
+  
+  
+  //Set the purpleRectangleView
+  let purpleRectangleView: UIView = {
+    let rec = UIView()
+    rec.translatesAutoresizingMaskIntoConstraints = false
+    rec.backgroundColor = .purple
+    return rec
+  }()
+  
+  //Set the blueSqures and StackView
+  let blueSquresStackView: UIStackView = {
+    // Initilize squares by using for loop
+    var sqes:[UIView] = []
+    for _ in 0...2 {
+        let sq = UIView()
+        sq.translatesAutoresizingMaskIntoConstraints = false
+        sq.backgroundColor = .blue
+        sqes += [sq]
+    }
+    // Initilize stackView
+    let rec = UIStackView(arrangedSubviews: sqes)
+    rec.translatesAutoresizingMaskIntoConstraints = false
+    rec.axis = .vertical
+    rec.alignment = .center
+    rec.distribution = .equalSpacing
+    return rec
+  }()
+  
+  //Set the redRectangle and StackView
+  let redRectangleStackView: UIStackView = { (recWidth: CGFloat) in
+    // Initilize the subviews
+    let l = UIView()
+    l.backgroundColor = .orange
+    l.translatesAutoresizingMaskIntoConstraints = false
+    
+    let r = UIView()
+    r.backgroundColor = .orange
+    r.translatesAutoresizingMaskIntoConstraints = false
+
+    // Initilize the stackview and add subviews
+    let rec = UIStackView(arrangedSubviews: [l,r])
+    
+    rec.translatesAutoresizingMaskIntoConstraints = false
+    // Set marign of stack view
+    rec.spacing = recWidth/4
+    rec.directionalLayoutMargins = NSDirectionalEdgeInsets(top: recWidth/4, leading: recWidth/4, bottom: recWidth/4, trailing: recWidth/4)
+    rec.backgroundColor = .red
+    rec.axis = .horizontal
+    rec.distribution = .equalSpacing
+    // This is required when you want to set margin in stackview!
+    rec.isLayoutMarginsRelativeArrangement = true
+    return rec
+  }(64)
+  
+
 
   var widthAnchor: NSLayoutConstraint?
   var heightAnchor: NSLayoutConstraint?
   
-  let rectagleWidth: CGFloat = 64
+  let recWidth: CGFloat = 64
     
   
   override func viewDidLoad() {
@@ -77,61 +131,47 @@ class ViewController: UIViewController {
     heightAnchor?.isActive = true
     
     
+    
+    
+    
+    
     /*
      Set the purple rectagle
      */
-    //Initilize
-    let purpleRectangle = UIView()
-    purpleRectangle.translatesAutoresizingMaskIntoConstraints = false
-    purpleRectangle.backgroundColor = .purple
-    view.addSubview(purpleRectangle)
-    
-    print(rectagleWidth/2)
+    view.addSubview(purpleRectangleView)
     //set constrains
     NSLayoutConstraint.activate([
-      purpleRectangle.bottomAnchor.constraint(equalTo: mainView.bottomAnchor, constant: -rectagleWidth/2),
-      purpleRectangle.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -rectagleWidth/2),
-      purpleRectangle.widthAnchor.constraint(equalTo: mainView.widthAnchor, multiplier: 0.6),
-      purpleRectangle.heightAnchor.constraint(equalToConstant: rectagleWidth)
+      purpleRectangleView.bottomAnchor.constraint(equalTo: mainView.bottomAnchor, constant: -recWidth/2),
+      purpleRectangleView.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -recWidth/2),
+      purpleRectangleView.widthAnchor.constraint(equalTo: mainView.widthAnchor, multiplier: 0.6),
+      purpleRectangleView.heightAnchor.constraint(equalToConstant: recWidth)
     ])
+    
     
     
     
     /*
      Set the blue squares
      */
-    // Initilize squares by using for loop
-    var blueSquares:[UIView] = []
-    for _ in 0...2 {
-        let sq = UIView()
-        sq.translatesAutoresizingMaskIntoConstraints = false
-        sq.backgroundColor = .blue
-        blueSquares += [sq]
-    }
-    
-    // Initilize stackView
-    let blueSquresStackView = UIStackView(arrangedSubviews: blueSquares)
-    blueSquresStackView.translatesAutoresizingMaskIntoConstraints = false
-    blueSquresStackView.axis = .vertical
-    blueSquresStackView.alignment = .center
-    blueSquresStackView.distribution = .equalSpacing
+
     view.addSubview(blueSquresStackView)
-
-
     // Set constrains of subview(squres)
     for i in 0...2{
         NSLayoutConstraint.activate([
-            blueSquresStackView.arrangedSubviews[i].widthAnchor.constraint(equalToConstant: rectagleWidth),
-            blueSquresStackView.arrangedSubviews[i].heightAnchor.constraint(equalToConstant: rectagleWidth)
+            blueSquresStackView.arrangedSubviews[i].widthAnchor.constraint(equalToConstant: recWidth),
+            blueSquresStackView.arrangedSubviews[i].heightAnchor.constraint(equalToConstant: recWidth)
         ])
     }
     
+    // Set constrains of Stackview
     NSLayoutConstraint.activate([
         blueSquresStackView.heightAnchor.constraint(equalTo: mainView.heightAnchor, multiplier: 0.7),
         blueSquresStackView.centerXAnchor.constraint(equalTo: mainView.centerXAnchor),
         blueSquresStackView.centerYAnchor.constraint(equalTo: mainView.centerYAnchor),
-        blueSquresStackView.widthAnchor.constraint(equalToConstant: rectagleWidth),
+        blueSquresStackView.widthAnchor.constraint(equalToConstant: recWidth),
     ])
+    
+    
     
     
     
@@ -139,59 +179,27 @@ class ViewController: UIViewController {
     /*
      Set the red squares
      */
-    
-    // Initilize the subviews
-    let leftRectangle = UIView()
-    leftRectangle.backgroundColor = .orange
-    leftRectangle.translatesAutoresizingMaskIntoConstraints = false
-    
-    let rightRectangle = UIView()
-    rightRectangle.backgroundColor = .orange
-    rightRectangle.translatesAutoresizingMaskIntoConstraints = false
-
-    // Initilize the stackview and add subviews
-    let redRectangleStackView = UIStackView(arrangedSubviews: [leftRectangle,rightRectangle])
-    redRectangleStackView.translatesAutoresizingMaskIntoConstraints = false
-    redRectangleStackView.backgroundColor = .red
-    
-    redRectangleStackView.axis = .horizontal
-    redRectangleStackView.distribution = .equalSpacing
-    redRectangleStackView.isLayoutMarginsRelativeArrangement = true
-//
-    
     view.addSubview(redRectangleStackView)
     // Set constrains of subviews
     NSLayoutConstraint.activate([
-      leftRectangle.topAnchor.constraint(equalTo: redRectangleStackView.topAnchor, constant: rectagleWidth/4),
-      leftRectangle.leadingAnchor.constraint(equalTo: redRectangleStackView.leadingAnchor, constant: rectagleWidth/4),
-      leftRectangle.bottomAnchor.constraint(equalTo: redRectangleStackView.bottomAnchor, constant: -rectagleWidth/4),
-      leftRectangle.widthAnchor.constraint(equalTo: redRectangleStackView.widthAnchor, multiplier: 0.6),
-      
-      rightRectangle.leadingAnchor.constraint(equalTo: leftRectangle.trailingAnchor, constant: rectagleWidth/4),
-      rightRectangle.topAnchor.constraint(equalTo: redRectangleStackView.topAnchor, constant: rectagleWidth/4),
-      rightRectangle.bottomAnchor.constraint(equalTo: redRectangleStackView.bottomAnchor, constant: -rectagleWidth/4),
-      rightRectangle.trailingAnchor.constraint(equalTo: redRectangleStackView.trailingAnchor, constant: -rectagleWidth/4)
+      redRectangleStackView.arrangedSubviews[0].widthAnchor.constraint(equalToConstant: recWidth*1.5),
+      redRectangleStackView.arrangedSubviews[1].widthAnchor.constraint(equalToConstant: recWidth),
     ])
     
     // Set constrains of stackview
     NSLayoutConstraint.activate([
-      redRectangleStackView.widthAnchor.constraint(equalToConstant: rectagleWidth*4),
-      redRectangleStackView.heightAnchor.constraint(equalToConstant: rectagleWidth),
-      redRectangleStackView.topAnchor.constraint(equalTo: mainView.topAnchor, constant: rectagleWidth/2),
-      redRectangleStackView.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -rectagleWidth/2)
+      redRectangleStackView.heightAnchor.constraint(equalToConstant: recWidth),
+      redRectangleStackView.topAnchor.constraint(equalTo: mainView.topAnchor, constant: recWidth/2),
+      redRectangleStackView.trailingAnchor.constraint(equalTo: mainView.trailingAnchor, constant: -recWidth/2)
     ])
 
     
     
     
-    
-    
 
-    
-
-
-    
-//    Set the switching bottons (squareButton, portraitButton, landScapeButton)
+    /*
+     Set the switching bottons (squareButton, portraitButton, landScapeButton)
+     */
     let buttStackView = UIStackView(arrangedSubviews: [
       squareButton, portraitButton, landScapeButton])
     buttStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -257,18 +265,3 @@ class ViewController: UIViewController {
 }
 
 
-/*
- note
- 
- - xxxview.bounds.widht will be 0.0 at view did load (need .layoutIfNeeded())
- - you can integrate .isActivate = true by NSLayoutConstraint.activate([])
-  - or you can make extention https://www.avanderlee.com/swift/auto-layout-programmatically/
- - all contrains setting + "including subview of stack view" must be done after view.addSubview()
- - only heightAnchor, width Anchor has multiplier (not in top or bottom)
- - Double and CGFloat is different
- - the point is , set the minimun constrains -> try to save constrains so that there will be no conflicts
- 
- Q
- - in computed variables, what is () of {}() ?
- - isLayoutMarginsRelativeArrangement = true?
- */
