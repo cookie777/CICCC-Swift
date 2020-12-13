@@ -13,10 +13,12 @@
 		4870453225845E9700CE100B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4870453125845E9700CE100B /* Assets.xcassets */; };
 		4870453525845E9700CE100B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4870453325845E9700CE100B /* LaunchScreen.storyboard */; };
 		4870453F258460CB00CE100B /* SuperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4870453E258460CB00CE100B /* SuperViewController.swift */; };
+		487465ED2585C18A002F0C0A /* LocationDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487465EC2585C18A002F0C0A /* LocationDetails.swift */; };
 		48C751EF2584730B009B583D /* CoatRoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48C751EE2584730B009B583D /* CoatRoomViewController.swift */; };
 		48C751F2258478E9009B583D /* LibraryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48C751F1258478E9009B583D /* LibraryViewController.swift */; };
 		48C751F52584AEB0009B583D /* DiningRoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48C751F42584AEB0009B583D /* DiningRoomViewController.swift */; };
 		48C751F82584AEF2009B583D /* StarisUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48C751F72584AEF2009B583D /* StarisUpViewController.swift */; };
+		48E9FDDA2585BF2300BAF850 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48E9FDD92585BF2300BAF850 /* Location.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,10 +30,12 @@
 		4870453425845E9700CE100B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4870453625845E9700CE100B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4870453E258460CB00CE100B /* SuperViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperViewController.swift; sourceTree = "<group>"; };
+		487465EC2585C18A002F0C0A /* LocationDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationDetails.swift; sourceTree = "<group>"; };
 		48C751EE2584730B009B583D /* CoatRoomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoatRoomViewController.swift; sourceTree = "<group>"; };
 		48C751F1258478E9009B583D /* LibraryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewController.swift; sourceTree = "<group>"; };
 		48C751F42584AEB0009B583D /* DiningRoomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiningRoomViewController.swift; sourceTree = "<group>"; };
 		48C751F72584AEF2009B583D /* StarisUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarisUpViewController.swift; sourceTree = "<group>"; };
+		48E9FDD92585BF2300BAF850 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,7 +70,8 @@
 			children = (
 				4870452825845E9600CE100B /* AppDelegate.swift */,
 				4870452A25845E9600CE100B /* SceneDelegate.swift */,
-				487045422584625600CE100B /* ViewController */,
+				48E9FDD82585BF0700BAF850 /* Model */,
+				487045422584625600CE100B /* Controller */,
 				4870453125845E9700CE100B /* Assets.xcassets */,
 				4870453325845E9700CE100B /* LaunchScreen.storyboard */,
 				4870453625845E9700CE100B /* Info.plist */,
@@ -74,7 +79,7 @@
 			path = Assignment3;
 			sourceTree = "<group>";
 		};
-		487045422584625600CE100B /* ViewController */ = {
+		487045422584625600CE100B /* Controller */ = {
 			isa = PBXGroup;
 			children = (
 				4870453E258460CB00CE100B /* SuperViewController.swift */,
@@ -84,7 +89,16 @@
 				48C751F42584AEB0009B583D /* DiningRoomViewController.swift */,
 				48C751F72584AEF2009B583D /* StarisUpViewController.swift */,
 			);
-			path = ViewController;
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		48E9FDD82585BF0700BAF850 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				48E9FDD92585BF2300BAF850 /* Location.swift */,
+				487465EC2585C18A002F0C0A /* LocationDetails.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -157,9 +171,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				4870452D25845E9600CE100B /* DoorwayViewController.swift in Sources */,
+				487465ED2585C18A002F0C0A /* LocationDetails.swift in Sources */,
 				48C751F82584AEF2009B583D /* StarisUpViewController.swift in Sources */,
 				4870452925845E9600CE100B /* AppDelegate.swift in Sources */,
 				4870453F258460CB00CE100B /* SuperViewController.swift in Sources */,
+				48E9FDDA2585BF2300BAF850 /* Location.swift in Sources */,
 				4870452B25845E9600CE100B /* SceneDelegate.swift in Sources */,
 				48C751F2258478E9009B583D /* LibraryViewController.swift in Sources */,
 				48C751F52584AEB0009B583D /* DiningRoomViewController.swift in Sources */,

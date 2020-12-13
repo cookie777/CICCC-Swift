@@ -6,6 +6,19 @@
 //
 
 /*
+ note
+ 
+ 
+ question
+ 
+ 
+ todo
+ 
+ 
+ */
+
+
+/*
  Super view cotroller for each view Controller.
  This vc is not used directly but used as parent view.
  */
@@ -15,56 +28,17 @@ import UIKit
 class SuperViewController: UIViewController {
   
   
-  enum Location : String {
-    case doorway    = "Doorway"
-    case coatRoom   = "Coat room"
-    case library    = "Library"
-    case diningRoom = "Dining room"
-    case stairsUp   = "Staris up"
-  }
-  
   var currentLocation : Location = .doorway
   var destinations : [Location] = []
   
-  var fetchImgaeURL = {(l: Location) -> String in
-    switch l{
-    case .doorway:
-      return "doorway"
-    case .coatRoom:
-      return "coat_room"
-    case .library:
-      return "library"
-    case .diningRoom:
-      return "dining_room"
-    case .stairsUp:
-      return "stairs_up"
-    }
-  }
-  
-  var fetchViewController = {(l: Location) -> SuperViewController in
-    switch l{
-    case .coatRoom:
-      return CoatRoomViewController()
-    case .doorway:
-      return DoorwayViewController()
-    case .library:
-      return LibraryViewController()
-    case .diningRoom:
-      return DiningRoomViewController()
-    case .stairsUp:
-      return StarisUpViewController()
-    }
-  }
-  
   
   lazy var imageView : UIImageView = {
-    let image = UIImage(named: fetchImgaeURL(currentLocation))
+    let image = UIImage(named: LocationDetails.imgaeURL(currentLocation))
     let iv =  UIImageView(image: image)
     iv.translatesAutoresizingMaskIntoConstraints = false
     iv.contentMode = .scaleAspectFit
     return iv
   }()
-  
   
   
   lazy var buttons : [UIButton]  = {
@@ -147,7 +121,7 @@ class SuperViewController: UIViewController {
     guard let nextEnum = Location(rawValue: nextStr) else {
       return
     }
-    let nextVC = fetchViewController(nextEnum)
+    let nextVC = LocationDetails.nextViewController(nextEnum)
 
     navigationController?.pushViewController(nextVC, animated: true)
   }
