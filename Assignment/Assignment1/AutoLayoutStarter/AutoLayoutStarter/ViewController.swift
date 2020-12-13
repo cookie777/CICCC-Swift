@@ -56,11 +56,12 @@ class ViewController: UIViewController {
     return rec
   }()
   
+  
   //Set the blueSqures and StackView
   let blueSquresStackView: UIStackView = {
     // Initilize squares by using for loop
     var sqes:[UIView] = []
-    for _ in 0...2 {
+    for _ in 0...1 {
         let sq = UIView()
         sq.translatesAutoresizingMaskIntoConstraints = false
         sq.backgroundColor = .blue
