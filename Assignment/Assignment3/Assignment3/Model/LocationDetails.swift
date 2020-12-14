@@ -7,6 +7,20 @@
 
 import Foundation
 
+/*
+ # Overview
+ - This struct stores and returns details for each location
+   - imageURL -> return image pass
+   - nextViewController -> return view controller
+ - Each case is managed by enum
+ 
+ ## ex)
+ - If you want to get Doorway's image, you can use
+  `UIImage(named: LocationDetails.imgaeURL(.doorway))`
+ - If you want to get Doorway's viewcontroller, you can use
+  `let nextVC = LocationDetails.nextViewController(.doorway)`
+ */
+
 struct LocationDetails {
   
   static var imgaeURL = {(l: Location) -> String in
@@ -32,7 +46,7 @@ struct LocationDetails {
     case .dungeon:
       return "dungeon"
     case .labratory:
-      return "labroatory"
+      return "labratory"
     case .mysteriousLake:
       return "mysterious_lake"
     case .backPorch:
@@ -56,27 +70,26 @@ struct LocationDetails {
       return DiningRoomViewController()
     case .stairsUp:
       return StarisUpViewController()
-      
     case .secretPassage:
-      return StarisUpViewController()
+      return SecretPassageViewController()
     case .kitchen:
-      return StarisUpViewController()
+      return KitchenViewController()
     case .bedroom:
-      return StarisUpViewController()
+      return BedroomViewController()
     case .bathroom:
-      return StarisUpViewController()
+      return BathroomViewController()
     case .dungeon:
-      return StarisUpViewController()
+      return DungeonViewController()
     case .labratory:
-      return StarisUpViewController()
+      return LaboratoryViewController()
     case .mysteriousLake:
-      return StarisUpViewController()
+      return MysteriousLakeViewController()
     case .backPorch:
-      return StarisUpViewController()
+      return BackPorchViewController()
     case .generator:
-      return StarisUpViewController()
+      return GeneratorViewController()
     case .cursedChalice:
-      return StarisUpViewController()
+      return CursedChaliceViewController()
     }
   }
 }

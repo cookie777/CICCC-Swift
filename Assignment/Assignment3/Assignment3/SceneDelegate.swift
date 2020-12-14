@@ -21,9 +21,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     window = UIWindow(windowScene: scene)
     // 2. create a navigation controller
     let nv = UINavigationController(rootViewController: DoorwayViewController())
-    // 2. set initial (root) view controller
+    // 3. set initial (root) view controller
     window?.rootViewController = nv
-    // 3. make the window key and visible
+    // 4. make the window key and visible
     window?.makeKeyAndVisible()
   
   }
