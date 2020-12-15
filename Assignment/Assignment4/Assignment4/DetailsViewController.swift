@@ -65,7 +65,6 @@ class DetailsViewController: UIViewController {
     super.viewDidLoad()
     
     setLayout()
-      // Do any additional setup after loading the view.
   }
   
   //Add stack view into view and add constraints
