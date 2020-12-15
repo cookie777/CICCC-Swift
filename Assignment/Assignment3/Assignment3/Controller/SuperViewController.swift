@@ -252,9 +252,9 @@ class SuperViewController: UIViewController {
  note
  question
  - init why required
- - instace -> init -> viewdid?
- 
+ - instace -> init -> viewdid: yes
+ - enum different file?
+
  todo
- - comment
- 
+
  */
