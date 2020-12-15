@@ -12,6 +12,8 @@ class DetailsViewController: UIViewController {
   
   var city: City!
   
+  //create one label + value
+  //ex) "Country" "🇨🇦Canada"
   let createDetailView =  { (label : String, value : String) -> UIStackView in
     let lb   = UILabel()
     lb.text  = label
@@ -32,6 +34,7 @@ class DetailsViewController: UIViewController {
     return sv
   }
   
+  // Group detailView into array
   lazy var detailViews   : [UIStackView] = {
     var dvs : [UIStackView] = []
     dvs = [
@@ -43,6 +46,8 @@ class DetailsViewController: UIViewController {
     return dvs
   }()
   
+  
+  // Create stack view with embeding detailViews
   lazy var mainStackView : UIStackView = {
     let sv  = UIStackView(arrangedSubviews: detailViews)
     sv.translatesAutoresizingMaskIntoConstraints = false
@@ -63,6 +68,7 @@ class DetailsViewController: UIViewController {
       // Do any additional setup after loading the view.
   }
   
+  //Add stack view into view and add constraints
   func setLayout() {
     view.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
     view.addSubview(mainStackView)

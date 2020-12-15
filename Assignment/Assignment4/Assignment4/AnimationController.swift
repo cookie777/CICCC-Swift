@@ -10,11 +10,9 @@ import UIKit
 
 class AnimationController: UIViewController, UIViewControllerAnimatedTransitioning{
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-    }
+  override func viewDidLoad() {
+    super.viewDidLoad()
+  }
     
 
   func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {

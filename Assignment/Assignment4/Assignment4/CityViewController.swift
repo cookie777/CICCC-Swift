@@ -14,17 +14,17 @@ class CityViewController: UIViewController, UINavigationControllerDelegate {
 	var city: City!
 
 	override func viewDidLoad() {
-		super.viewDidLoad()
+    super.viewDidLoad()
     navigationController?.delegate = self
 
 		view.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
 
 		let cityLabel           = UILabel(frame: CGRect(
-                                        x: view.bounds.width / 2 - 150,
-                                        y: view.bounds.height / 2 - 200,
-                                        width: 300,
-                                        height: 50)
-                                      )
+                                x: view.bounds.width / 2 - 150,
+                                y: view.bounds.height / 2 - 200,
+                                width: 300,
+                                height: 50)
+                              )
     cityLabel.text          = city.emoji + city.name
 		cityLabel.textAlignment = .center
 		cityLabel.font          = UIFont(name: "Helvetica Neue", size: 50)
@@ -45,11 +45,11 @@ class CityViewController: UIViewController, UINavigationControllerDelegate {
 		view.addSubview(butt)
 	}
   
+  //If details buttton is pressed -> push next vc + passing current "city" data
   @objc func showWeatherDetails() {
     let nextVC = DetailsViewController()
     nextVC.city = self.city
-    
-    
+  
     navigationController?.pushViewController(nextVC, animated: true)
   }
   
