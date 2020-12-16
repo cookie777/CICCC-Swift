@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CityViewController: UIViewController, UINavigationControllerDelegate {
+class CityViewController: UIViewController, UINavigationControllerDelegate{
  
   
 	var city: City!
@@ -16,7 +16,6 @@ class CityViewController: UIViewController, UINavigationControllerDelegate {
 	override func viewDidLoad() {
     super.viewDidLoad()
     navigationController?.delegate = self
-
 		view.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
 
     let cityLabel           = UILabel(frame: CGRect(

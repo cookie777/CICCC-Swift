@@ -8,12 +8,7 @@
 
 import UIKit
 
-class AnimationController: UIViewController, UIViewControllerAnimatedTransitioning{
-
-  override func viewDidLoad() {
-    super.viewDidLoad()
-  }
-    
+class AnimationController: NSObject, UIViewControllerAnimatedTransitioning{
 
   func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
     return 0.5
