@@ -54,7 +54,7 @@ class CityViewController: UIViewController, UINavigationControllerDelegate{
   @objc func showWeatherDetails() {
     let nextVC = DetailsViewController()
     nextVC.city = self.city
-  
+    navigationController?.navigationBar.topItem?.backButtonTitle = city.name
     navigationController?.pushViewController(nextVC, animated: true)
   }
   
