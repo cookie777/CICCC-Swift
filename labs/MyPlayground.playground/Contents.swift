@@ -1,35 +1,61 @@
 import UIKit
 
-//func addTwoValue(a: Double,b: Double) -> Double{
-//  return a + b
+//var v1 = 1
+//
+////class Test{
+////    var v2 = 2
+////    func f(){
+////        let v3 = 2
+////        print(v3)
+////    }
+////    var v4 = f
+////    var v5 = {print($0)}
+////}
+////
+////var v6 = Test()
+//
+//
+//class Test{
+//    func f(){
+//        let v1 = 1
+//        print(v1)
+//    }
+//    var v2 = f
+//}
+
+
+//var b = {
+//    var a = 2
+//    print(a)
+//}
+////
+//b()
+
+
+//func planB()->String{
+////    print("kill!")
+////    print("run")
+////    print("bomb!")
+//    return "mission accomplish"
 //}
 //
-//func dosomethinAfterGetData(localData: Double,  command: (Double,Double)->(Double)  )->Double{
+//var Tom = planB()
+
 //
-//  let dataResult = 12.0
-//  // takes 1 day
-//  return command(localData, dataResult)
+//
+//
+//
+//var Tom = { () -> String in
+//    return "mission accomplish"
+//}()
+//
+
+
+//let letters = "abracadabra"
+//let letterCount = letters.reduce(into: [:]) { counts, letter in
+//    counts[letter, default: 0] += 1
 //}
-//
-//
-//let localData = 24.0
-//
-//let r = dosomethinAfterGetData(localData: localData, command: {$0+$1})
-//print(r)
-func isReferenceType(_ toTest: Any) -> Bool {
-    return type(of: toTest) is AnyClass
-}
+// letterCount == ["a": 5, "b": 2, "r": 2, "c": 1, "d": 1]
 
-func yy(){
-  print("123")
-}
-
-class A{}
-struct B{}
-
-let a = {print("123")}
-let b = yy
-
-print(a)
-
-
+var str1 : String = "abc"
+var str2 : String = "abc"
