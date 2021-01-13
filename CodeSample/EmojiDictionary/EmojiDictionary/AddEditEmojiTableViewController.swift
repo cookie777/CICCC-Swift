@@ -28,6 +28,7 @@ class AddEditEmojiTableViewController: UITableViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
+
     if emoji == nil {
       title = "Add Emoji"
     } else {

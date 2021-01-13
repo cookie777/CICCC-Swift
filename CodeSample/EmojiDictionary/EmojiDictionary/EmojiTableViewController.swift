@@ -55,9 +55,10 @@ class EmojiTableViewController: UITableViewController, AddEditEmojiTVCDelegate {
   
   func add(_ emoji: Emoji) {
     emojis.append(emoji)
+//    tableView.reloadData()
     tableView.insertRows(at: [IndexPath(row: emojis.count - 1, section: 0)], with: .automatic)
   }
-  
+    
   func edit(_ emoji: Emoji) {
     if let indexPath = tableView.indexPathForSelectedRow {
       emojis.remove(at: indexPath.row)
