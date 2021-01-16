@@ -13,13 +13,7 @@ class MenuTableViewController: UITableViewController {
   let category: String
   // storing menuItems that you get from api
   var menuItems = [MenuItem]()
-  // formatter for showing price
-  let priceFormatter: NumberFormatter = {
-    let formatter = NumberFormatter()
-    formatter.numberStyle = .currency
-    formatter.currencySymbol = "$"
-    return formatter
-  }()
+
   
 
   init(category: String) {
@@ -42,7 +36,7 @@ class MenuTableViewController: UITableViewController {
           case .success(let menuItems):
             self.updateUI(with: menuItems)
           case .failure(let error):
-            self.displayError(error, title: "Failed to Fetch Menu Items for \(self.category)")
+            Alert.displayError(target: self, error, title: "Failed to Fetch Menu Items for \(self.category)")
           }
         }
       }
@@ -53,11 +47,6 @@ class MenuTableViewController: UITableViewController {
           self.tableView.reloadData()
   }
 
-  func displayError(_ error: Error, title: String){
-    let alert = UIAlertController(title: title, message: error.localizedDescription, preferredStyle: .alert )
-    alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: nil))
-    self.present(alert, animated: true)
-  }
   
 
 }
@@ -82,12 +71,20 @@ extension MenuTableViewController{
     let menuItem = menuItems[indexPath.row]
     content.text = menuItem.name
     content.prefersSideBySideTextAndSecondaryText = true
-    content.secondaryText = priceFormatter.string(from: NSNumber(value: menuItem.price))
+    content.secondaryText = MenuItem.priceFormatter.string(from: NSNumber(value: menuItem.price))
 //    content.secondaryTextProperties.font = .systemFont(ofSize: 16)
     cell.contentConfiguration = content
     cell.accessoryType = .disclosureIndicator
     
     return cell
+  }
+  
+  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    let selectedMenuItem = menuItems[indexPath.row]
+    
+    let nextVC =  MenuItemDetailViewController(menuItem: selectedMenuItem)
+    
+    navigationController?.pushViewController(nextVC, animated: true)
   }
   
   

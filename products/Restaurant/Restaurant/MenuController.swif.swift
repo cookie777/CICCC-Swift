@@ -13,9 +13,17 @@ import Foundation
 
 class MenuController {
   
-  // Use singliton
+
+  // Use singleton
   static let shared = MenuController()
   private init(){}
+  
+  static let orderUpdatedNotification = Notification.Name("MenuController.orderUpdated")
+  var order = Order(){
+    didSet{
+      NotificationCenter.default.post(name: MenuController.orderUpdatedNotification, object: nil)
+    }
+  }
   
   private let baseURL = URL(string: "http://localhost:8080/")!
   

@@ -14,7 +14,7 @@ struct MenuItem: Codable {
     var price: Double
     var category: String
     var imageURL: URL
- 
+  
     enum CodingKeys: String, CodingKey {
         case id
         case name
@@ -23,4 +23,12 @@ struct MenuItem: Codable {
         case category
         case imageURL = "image_url"
     }
+  
+  // formatter for showing price
+  static let priceFormatter: NumberFormatter = {
+    let formatter = NumberFormatter()
+    formatter.numberStyle = .currency
+    formatter.currencySymbol = "$"
+    return formatter
+  }()
 }
