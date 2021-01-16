@@ -18,9 +18,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
     guard let windowScene = (scene as? UIWindowScene) else { return }
     
+    // Create basic controller views
+    let menuNVC = UINavigationController(rootViewController: CategoryTableViewController())
+    let orderNVC = UINavigationController(rootViewController: OrderTableViewController())
+    
+    let tabBarVC = UITabBarController()
+    tabBarVC.viewControllers = [menuNVC, orderNVC]
+    menuNVC.tabBarItem = UITabBarItem(tabBarSystemItem: .mostViewed, tag: 0)
+    orderNVC.tabBarItem = UITabBarItem(tabBarSystemItem: .recents, tag: 1)
+
     window = UIWindow(windowScene: windowScene)
     window?.makeKeyAndVisible()
-    window?.rootViewController = ViewController()
+    window?.rootViewController = tabBarVC
   }
 
   func sceneDidDisconnect(_ scene: UIScene) {
