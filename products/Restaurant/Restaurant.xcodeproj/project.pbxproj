@@ -98,8 +98,8 @@
 			children = (
 				4835DC4425B2D178003CCA65 /* Basic files */,
 				48DE4FA625B271BA00A33231 /* Utils */,
-				485B419325B17BD800799B37 /* CategoryTableViewController.swift */,
 				485B41B225B1845100799B37 /* MenuController.swif.swift */,
+				485B419325B17BD800799B37 /* CategoryTableViewController.swift */,
 				485B419C25B17C0900799B37 /* MenuTableViewController.swift */,
 				48DE4FA225B26E7F00A33231 /* MenuItemDetailViewController.swift */,
 				485B41A025B17C1D00799B37 /* OrderTableViewController.swift */,

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import UIKit
 /*
  A controller for managing networking(api)
  */
@@ -132,4 +132,22 @@ class MenuController {
     }.resume()
     
   }
+  
+  
+  func fetchImage(url: URL, completion: @escaping ((UIImage?) -> ())) {
+    print(url)
+
+    URLSession.shared.dataTask(with: url) { (data, response, error) in
+
+      if let data = data ,let img = UIImage(data: data){
+        completion(img)
+      }else{
+        completion(nil)
+      }
+
+    }.resume()
+
+  }
+
 }
+

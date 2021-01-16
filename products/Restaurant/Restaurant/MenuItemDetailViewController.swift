@@ -11,8 +11,9 @@ class MenuItemDetailViewController: UIViewController {
   
   
   var imageView : UIImageView = {
-    let img = UIImage(systemName: "exclamationmark.octagon")
+    let img = UIImage(systemName: "photo.on.rectangle")
     let imgV = UIImageView(image: img)
+    imgV.contentMode = .scaleAspectFit
     return imgV
   }()
   
@@ -97,9 +98,14 @@ class MenuItemDetailViewController: UIViewController {
   
   func updateUI() {
     nameLabel.text = menuItem.name
-    priceLabel.text = MenuItem.priceFormatter.string(from:
-                                                      NSNumber(value: menuItem.price))
+    priceLabel.text = MenuItem.priceFormatter.string(from: NSNumber(value: menuItem.price))
     detailTextLabel.text = menuItem.detailText
+    MenuController.shared.fetchImage(url: menuItem.imageURL) { (img) in
+      guard let img = img else{return}
+      DispatchQueue.main.async {
+        self.imageView.image = img
+      }
+    }
   }
 
   @objc func orderButtonTapped(){

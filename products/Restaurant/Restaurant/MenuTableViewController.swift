@@ -73,9 +73,23 @@ extension MenuTableViewController{
     content.text = menuItem.name
     content.prefersSideBySideTextAndSecondaryText = true
     content.secondaryText = MenuItem.priceFormatter.string(from: NSNumber(value: menuItem.price))
-//    content.secondaryTextProperties.font = .systemFont(ofSize: 16)
-    cell.contentConfiguration = content
     cell.accessoryType = .disclosureIndicator
+    
+    // set content image
+    MenuController.shared.fetchImage(url: menuItem.imageURL) { (uiImage: UIImage?) in
+      DispatchQueue.main.async {
+        if let uiImage = uiImage{
+          content.image = uiImage
+        }else{
+          // if image is nil, set place holder
+          content.image = UIImage(systemName: "photo.on.rectangle")
+        }
+        cell.setNeedsLayout()
+        cell.contentConfiguration = content
+      }
+    }
+    
+    
     
     return cell
   }
