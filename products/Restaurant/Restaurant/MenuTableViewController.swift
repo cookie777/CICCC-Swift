@@ -14,6 +14,7 @@ class MenuTableViewController: UITableViewController {
   // storing menuItems that you get from api
   var menuItems = [MenuItem]()
 
+
   
 
   init(category: String) {
@@ -23,7 +24,7 @@ class MenuTableViewController: UITableViewController {
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
     tableView.register(UITableViewCell.self, forCellReuseIdentifier: "MenuItem")
