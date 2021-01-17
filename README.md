@@ -1,2 +1,2 @@
 # CICCC-Swift
-Collections of swift product created in CICCC
+Collections of swift product created in CICCC.
