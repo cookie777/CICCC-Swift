@@ -33,8 +33,6 @@ struct Location{
  */
 var locations : [Categories: [Location]]
 
-
-
 // eg. [clothes, restaurant, park]
 var userOrder: [Categories]
 
