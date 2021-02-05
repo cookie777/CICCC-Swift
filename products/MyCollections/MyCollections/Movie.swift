@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct Movie {
+struct Movie: Hashable {
+    var id : Int
     var title : String
     var posterURL : String?
     var rating : Double
@@ -16,6 +17,7 @@ struct Movie {
     
     static var sampleData : [Movie] = [
         Movie(
+            id: 299536,
             title: "Avengers: Infinity War",
             posterURL: "/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg",
             rating: 8.3,
@@ -28,6 +30,7 @@ struct Movie {
             ]
         ),
         Movie(
+            id: 383498,
             title: "Deadpool 2",
             posterURL: "/to0spRl1CMDvyUbOnbb4fTk3VAd.jpg",
             rating: 7.6,
@@ -39,6 +42,7 @@ struct Movie {
               ]
         ),
         Movie(
+            id: 500664,
             title: "Upgrade",
             posterURL: "/adOzdWS35KAo21r9R4BuFCkLer6.jpg",
             rating: 7.6,
@@ -50,6 +54,7 @@ struct Movie {
             ]
         ),
         Movie(
+            id: 466282,
             title: "To All the Boys I've Loved Before",
             posterURL: "/hKHZhUbIyUAjcSrqJThFGYIR6kI.jpg",
             rating: 8.4,
@@ -60,6 +65,7 @@ struct Movie {
               ]
         ),
         Movie(
+            id: 455980,
             title: "Tag",
             posterURL: "/eXXpuW2xaq5Aen9N5prFlARVIvr.jpg",
             rating: 7,
@@ -70,6 +76,7 @@ struct Movie {
               ]
         ),
         Movie(
+            id: 73021,
             title: "Disenchantment",
             posterURL: "/c3cUb0b3qHlWaawbLRC9DSsJwEr.jpg",
             rating: 7.8,
@@ -81,6 +88,7 @@ struct Movie {
               ]
         ),
         Movie(
+            id: 489931,
             title: "American Animals",
             posterURL: "/aLbdKxgxuOPvs6CTlmzoOQ4Yg3j.jpg",
             rating:7,
@@ -91,6 +99,7 @@ struct Movie {
               ]
         ),
         Movie(
+            id: 454283,
             title: "Action Point",
             posterURL: "/5lqJx0uNKrD1cEKgaqF1LBsLAoi.jpg",
             rating: 5.3,
@@ -100,6 +109,7 @@ struct Movie {
               ]
         ),
         Movie(
+            id: 421792,
             title: "Down a Dark Hall",
             posterURL: "/wErHaJrD1QZ2FEVneH6w0GZUz2L.jpg",
             rating:  5.5,
@@ -112,6 +122,7 @@ struct Movie {
               ]
         ),
         Movie(
+            id: 857,
             title: "Saving Private Ryan",
             posterURL: "/miDoEMlYDJhOCvxlzI0wZqBs9Yt.jpg",
             rating: 8,

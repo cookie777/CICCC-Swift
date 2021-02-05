@@ -7,28 +7,89 @@
 
 import UIKit
 
-private let reuseIdentifier = "Cell"
+private let tagReuseIdentifier = Section.header.rawValue
+private let itemReuseIdentifier = Section.main.rawValue
+private let titleReuseIdentifier = "title"
 
 class CollectionViewController: UICollectionViewController {
+
+    var itemTagIds = movieGenre.map {$0.key}
+    var items = Movie.sampleData
     
+    var itemsSnapshot: NSDiffableDataSourceSnapshot<Section, SectionDataType>!
+    var dataSource: UICollectionViewDiffableDataSource<Section, SectionDataType>!
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         //Set background
-        collectionView.backgroundColor = .systemRed
+        collectionView.backgroundColor = .systemBackground
+        
+        // Register cell classes
+        self.collectionView!.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: tagReuseIdentifier)
+        self.collectionView!.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: itemReuseIdentifier)
+//
+//
+//        collectionView.register(ItemTitleView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: titleReuseIdentifier)
+//
+        createSnapshot()
+        createDataSource()
         
         // Set CollectionViewLayout
         collectionView.setCollectionViewLayout(createCollectionViewLayout(), animated: true)
         
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
         
-        // Register cell classes
-        self.collectionView!.register(CollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+
         
-        // Do any additional setup after loading the view.
+        
 
     }
+
+    private func createSnapshot(){
+        itemsSnapshot = NSDiffableDataSourceSnapshot<Section, SectionDataType>()
+        itemsSnapshot.appendSections([.header,.main])
+        itemTagIds.forEach{ tagId in
+            itemsSnapshot.appendItems([.header(tagId)], toSection: .header)
+        }
+        items.forEach{ item in
+            itemsSnapshot.appendItems([.main(item)], toSection: .main)
+        }
+    }
+
+    private func createDataSource() {
+        dataSource = UICollectionViewDiffableDataSource<Section, SectionDataType>(collectionView: collectionView, cellProvider: { (collectionView, indexPath, item) -> UICollectionViewCell? in
+            
+            
+            switch indexPath.section{
+            case 0:
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: tagReuseIdentifier, for: indexPath) as! TagCollectionViewCell
+                if case .header(let tagId) = item{
+                    cell.updateCell(str: movieGenre[tagId]!) 
+                }
+                return cell
+                
+            case 1:
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: itemReuseIdentifier, for: indexPath) as! ItemCollectionViewCell
+                if case .main(let movie) = item{
+                    cell.updateCell(item: movie)
+                }
+                return cell
+            default:
+                return UICollectionViewCell()
+            }
+        })
+        
+//        dataSource.supplementaryViewProvider = { [weak self] (collectionView: UICollectionView, kind: String, indexPath: IndexPath) -> UICollectionReusableView?  in
+//          let titleView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: titleReuseIdentifier, for: indexPath) as! ItemTitleView
+//            titleView.label.text = self?.items[indexPath.item].title
+//          return titleView
+//        }
+        dataSource.apply(itemsSnapshot)
+    }
+    
     
     /*
      // MARK: - Navigation
@@ -42,24 +103,24 @@ class CollectionViewController: UICollectionViewController {
     
     // MARK: UICollectionViewDataSource
     
-    override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 2
-    }
+//    override func numberOfSections(in collectionView: UICollectionView) -> Int {
+//        // #warning Incomplete implementation, return the number of sections
+//        return 2
+//    }
+//
     
+//    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+//        // #warning Incomplete implementation, return the number of items
+//        return 20
+//    }
     
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of items
-        return 20
-    }
-    
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
-        
-        // Configure the cell
-        
-        return cell
-    }
+//    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+//        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
+//
+//        // Configure the cell
+//
+//        return cell
+//    }
     
     // MARK: UICollectionViewDelegate
     
@@ -107,7 +168,7 @@ extension CollectionViewController{
             case 1:
                 return self?.createBodySection()
             default:
-                return self?.createBodySection()
+                return nil
             }
         }
 
@@ -116,23 +177,22 @@ extension CollectionViewController{
     func createHeaderSection() -> NSCollectionLayoutSection {
         let item = NSCollectionLayoutItem(
             layoutSize: .init(
-                widthDimension: .estimated(60), // override layter
+                widthDimension: .estimated(100), // override layter
                 heightDimension: .estimated(30)
             )
         )
-        item.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
         
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: .init(
-                widthDimension: .fractionalWidth(1.0),
+                widthDimension: item.layoutSize.widthDimension,
                 heightDimension: .estimated(30)
             ),
-            subitem: item,
-            count: 5
+            subitems: [item]
         )
         
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .continuous
+        section.interGroupSpacing = 8
         return section
     }
     
@@ -154,6 +214,15 @@ extension CollectionViewController{
             subitem: item,
             count: 2
         )
+        let titleSize = NSCollectionLayoutSize(
+          widthDimension: .fractionalWidth(1.0),
+            heightDimension: .fractionalWidth(1/5)
+        )
+//        NSCollectionLayoutSupplementaryItem(layoutSize: titleSize)
+//        let itemHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: titleSize, elementKind: UICollectionView.elementKindSectionHeader, alignment: .bottom)
+//        group.supplementaryItems = [itemHeader]
+        
+        
         let section = NSCollectionLayoutSection(group: group)
         return section
     }
@@ -161,3 +230,46 @@ extension CollectionViewController{
 
 
 }
+
+enum Section: String {
+    case header = "Header"
+    case main = "Main"
+}
+enum SectionDataType: Hashable {
+    case header(Int)
+    case main(Movie)
+}
+
+
+//
+//var itemTagsSnapshot: NSDiffableDataSourceSnapshot<Int, Int>!
+//var itemTagsDataSource: UICollectionViewDiffableDataSource<Int, Int>!
+//
+//var itemsSnapshot: NSDiffableDataSourceSnapshot<Int, Int>!
+//var itemsDataSource: UICollectionViewDiffableDataSource<Int, Int>!
+//
+//private func createItemTagsSnapshot(){
+//    itemTagsSnapshot = NSDiffableDataSourceSnapshot<Int, Int>()
+//    itemTagsSnapshot.appendSections([0])
+//    itemTagsSnapshot.appendItems(itemTags, toSection: 0)
+//}
+//private func createItemsTagsDataSource() {
+//    itemTagsDataSource = UICollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView, cellProvider: { (collectionView, indexPath, item) -> UICollectionViewCell? in
+//        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! CollectionViewCell
+//        return cell
+//    })
+//    itemTagsDataSource.apply(itemTagsSnapshot)
+//}
+//
+//private func createItemsSnapshot(){
+//    itemsSnapshot = NSDiffableDataSourceSnapshot<Int, Int>()
+//    itemsSnapshot.appendSections([1])
+//    itemsSnapshot.appendItems(items, toSection: 1)
+//}
+//private func createItemsDataSource() {
+//    itemsDataSource = UICollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView, cellProvider: { (collectionView, indexPath, item) -> UICollectionViewCell? in
+//        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! CollectionViewCell
+//        return cell
+//    })
+//    itemsDataSource.apply(itemsSnapshot)
+//}

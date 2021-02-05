@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/yanmer/Development/CICCC/Swift/products/MyRestaurants/MyCollections.xcodeproj">
+      location = "absolute:Users/yanmer/Development/CICCC/Swift/products/MyCollections/MyCollections.xcodeproj">
    </FileRef>
 </Workspace>
