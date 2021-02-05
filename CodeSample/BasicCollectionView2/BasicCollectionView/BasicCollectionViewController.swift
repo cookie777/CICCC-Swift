@@ -177,7 +177,7 @@ class BasicCollectionViewController: UICollectionViewController, UISearchResults
         mainWithPairReversedGroup
       ]
     )
-    
+
     let section = NSCollectionLayoutSection(group: nestedGroups)
     let headerSize = NSCollectionLayoutSize(
       widthDimension: .fractionalWidth(1.0),
