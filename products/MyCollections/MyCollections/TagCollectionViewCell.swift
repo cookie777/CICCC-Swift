@@ -17,7 +17,6 @@ class TagCollectionViewCell: UICollectionViewCell {
         
         contentView.addSubview(label)
         label.centerXYin(contentView)
-        
     }
     
     required init?(coder: NSCoder) {
@@ -32,5 +31,14 @@ class TagCollectionViewCell: UICollectionViewCell {
 //        print(frame.size)
     }
     
+    override var isSelected: Bool{
+        didSet{
+            if isSelected{
+                contentView.backgroundColor = .green
+            }else{
+                contentView.backgroundColor = .systemPink
+            }
+        }
+    }
 
 }
