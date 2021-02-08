@@ -160,13 +160,7 @@ extension CollectionViewController: UIViewControllerTransitioningDelegate{
     }
     
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        // By doing this, you can get current cell frame (pop up from that place!)
-//        guard let selectedIndexPath =  collectionView.indexPathsForSelectedItems?.first,
-//           let selectedItemCell = collectionView!.cellForItem(at: selectedIndexPath) as? ItemCollectionViewCell,
-//           let selectedItemCellSuperview = selectedItemCell.superview
-//           else{return nil}
-//        let cellFrame = selectedItemCellSuperview.convert(selectedItemCell.frame, to: nil)
-//
+
         PopAnimator.shared.presenting = true
         return PopAnimator.shared
     }
@@ -278,20 +272,31 @@ extension CollectionViewController: UISearchResultsUpdating{
         searchController.searchResultsUpdater = self // like delegate = self
         searchController.obscuresBackgroundDuringPresentation  = false // disable dark background
         searchController.searchBar.placeholder = "Search Titles"
+        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.5)]
         navigationItem.searchController = searchController
         collectionView.setContentOffset(.zero, animated: false)
+        navigationItem.hidesSearchBarWhenScrolling = false
         
     }
     
+
     
-    // This will show search bar without scrolling by default
-    override func viewDidAppear(_ animated: Bool) {
-      super.viewDidAppear(animated)
-      UIView.performWithoutAnimation {
-        navigationItem.searchController?.isActive = true
-        navigationItem.searchController?.isActive = false
-      }
-    }
+//
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+////        UIView.performWithoutAnimation {
+//            navigationItem.searchController?.isActive = false
+////        }
+//
+//    }
+//
+//    // This will show search bar without scrolling by default
+//    override func viewDidAppear(_ animated: Bool) {
+//      super.viewDidAppear(animated)
+//      UIView.performWithoutAnimation {
+//        navigationItem.searchController?.isActive = true
+//      }
+//    }
 }
 
 

@@ -17,7 +17,7 @@ class TagCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        contentView.backgroundColor = UIColor.systemPink.withAlphaComponent(0.6)
+        contentView.backgroundColor = UIColor.systemGray.withAlphaComponent(0.3)
         contentView.addSubview(label)
         label.centerXYin(contentView)
         
@@ -30,10 +30,6 @@ class TagCollectionViewCell: UICollectionViewCell {
     
     func updateCell(str: String) {
         label.text = str
-        //        setNeedsLayout()
-        //        layoutIfNeeded()
-        //        frame.size = CGSize(width: label.frame.size.width+16, height: frame.size.height)
-        //        print(frame.size)
     }
     
     override var isSelected: Bool{

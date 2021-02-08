@@ -82,14 +82,14 @@
 				48DF64EA25CF77670035083C /* NetworkController.swift */,
 				48BED62925CCD72D0010724C /* CollectionViewController.swift */,
 				48A2AB5D25CD325D00EDDC0F /* TagCollectionViewCell.swift */,
-				48BEF18525D0DEF800B18CE6 /* HorizontalStackView.swift */,
-				48BEF18625D0DEF800B18CE6 /* VerticalStackView.swift */,
 				48BED62D25CCD7E00010724C /* ItemCollectionViewCell.swift */,
 				48DF64F225CFA0260035083C /* ItemDetailViewController.swift */,
 				48BEF17F25D0BEE100B18CE6 /* PopAnimator.swift */,
 				48BED63625CD085C0010724C /* Movie.swift */,
 				48BED63925CD09A20010724C /* MovieGenre.swift */,
 				486E048725CD36CF00808874 /* UIView+ConstraintLayout.swift */,
+				48BEF18525D0DEF800B18CE6 /* HorizontalStackView.swift */,
+				48BEF18625D0DEF800B18CE6 /* VerticalStackView.swift */,
 			);
 			path = MyCollections;
 			sourceTree = "<group>";
