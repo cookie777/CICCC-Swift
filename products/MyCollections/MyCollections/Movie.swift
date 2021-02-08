@@ -14,7 +14,7 @@ struct Movie: Hashable {
     var rating : Double
     var reviewCount : Int
     var genre : [Int]
-    
+
     static var sampleData : [Movie] = [
         Movie(
             id: 299536,

@@ -108,10 +108,11 @@ extension CollectionViewController{
     private func createDataSource() {
         dataSource = UICollectionViewDiffableDataSource<Section, SectionDataType>(collectionView: collectionView, cellProvider: { (collectionView, indexPath, item) -> UICollectionViewCell? in
             
-            
             switch indexPath.section{
             case 0:
+                // Pull cell
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.tagReuseIdentifier, for: indexPath) as! TagCollectionViewCell
+                // item is  .header(associated value), if you can extract associated value as tagId
                 if case .header(let tagId) = item{
                     cell.updateCell(str: movieGenre[tagId]!) 
                 }
@@ -278,25 +279,6 @@ extension CollectionViewController: UISearchResultsUpdating{
         navigationItem.hidesSearchBarWhenScrolling = false
         
     }
-    
-
-    
-//
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-////        UIView.performWithoutAnimation {
-//            navigationItem.searchController?.isActive = false
-////        }
-//
-//    }
-//
-//    // This will show search bar without scrolling by default
-//    override func viewDidAppear(_ animated: Bool) {
-//      super.viewDidAppear(animated)
-//      UIView.performWithoutAnimation {
-//        navigationItem.searchController?.isActive = true
-//      }
-//    }
 }
 
 
