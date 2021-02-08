@@ -9,13 +9,12 @@ import UIKit
 
 
 
-class CollectionViewController: UICollectionViewController {
+class CollectionViewController: UICollectionViewController, UISearchControllerDelegate {
     
-    private var tagGridId = "tagGrid"
-    private var tagColumnId = "tagColumn"
+
+    private lazy var tagReuseIdentifier = "tag"
     private var itemGridId = "itemGrid"
     private var itemColumnId = "itemColumn"
-    private lazy var tagReuseIdentifier = activeLayout == .grid ? tagGridId : tagColumnId
     private lazy var itemReuseIdentifier = activeLayout == .grid ? itemGridId : itemColumnId
     
     var itemTagIds = movieGenre.map {$0.key}
@@ -23,6 +22,8 @@ class CollectionViewController: UICollectionViewController {
     
     var itemsSnapshot: NSDiffableDataSourceSnapshot<Section, SectionDataType>!
     var dataSource: UICollectionViewDiffableDataSource<Section, SectionDataType>!
+    
+    let searchController = UISearchController()
     
     lazy var gridButtonItem =  UIBarButtonItem(image: UIImage(systemName: "rectangle.grid.2x2"), style: .plain, target: self, action: #selector(leftButtonTapped))
     lazy var columnButtonItem = UIBarButtonItem(image: UIImage(systemName: "rectangle.grid.1x2"), style: .plain, target: self, action: #selector(leftButtonTapped))
@@ -58,22 +59,23 @@ class CollectionViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Collection View config : Data
-        self.collectionView!.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: tagGridId)
-        self.collectionView!.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: tagColumnId)
+        self.collectionView!.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: tagReuseIdentifier)
         self.collectionView!.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: itemGridId)
         self.collectionView!.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: itemColumnId)
         createSnapshot()
         createDataSource()
         
         // Collection View config : Layout
-        collectionView.backgroundColor = .systemBackground
+        collectionView.backgroundColor = .label
         activeLayout = .grid // This will automatically set leftButton and layout.
         collectionView.allowsMultipleSelection = true
         
         // Navigation bar config
         navigationItem.title = "Trend Movies"
-
         
+
+        setUpSearchController()
+    
     }
     
     @objc func leftButtonTapped(_ sender: UIBarButtonItem){
@@ -116,7 +118,7 @@ extension CollectionViewController{
             case 1:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.itemReuseIdentifier, for: indexPath) as! ItemCollectionViewCell
                 if case .main(let movie) = item{
-                    cell.updateCell(item: movie)
+                    cell.item = movie
                 }
                 return cell
             default:
@@ -127,8 +129,86 @@ extension CollectionViewController{
         
         dataSource.apply(itemsSnapshot)
     }
+}
+
+// MARK: - Display Detail
+extension CollectionViewController: UIViewControllerTransitioningDelegate{
     
-    func updateItems() {
+    func displayDetail(indexPath: IndexPath) {
+
+        guard let cell = collectionView!.cellForItem(at: indexPath) as? ItemCollectionViewCell else {return}
+        let nextVC = ItemDetailViewController(item: cell.item, image: cell.imageView.image)
+        nextVC.transitioningDelegate = self
+        nextVC.modalPresentationStyle = .overCurrentContext
+        present(nextVC, animated: true, completion: nil)
+        
+    }
+    
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        // By doing this, you can get current cell frame (pop up from that place!)
+//        guard let selectedIndexPath =  collectionView.indexPathsForSelectedItems?.first,
+//           let selectedItemCell = collectionView!.cellForItem(at: selectedIndexPath) as? ItemCollectionViewCell,
+//           let selectedItemCellSuperview = selectedItemCell.superview
+//           else{return nil}
+//        let cellFrame = selectedItemCellSuperview.convert(selectedItemCell.frame, to: nil)
+//
+        PopAnimator.shared.presenting = true
+        return PopAnimator.shared
+    }
+    
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        PopAnimator.shared.presenting = false
+        return PopAnimator.shared
+    }
+}
+
+
+
+
+// MARK: - Filter items config
+extension CollectionViewController{
+    // If cell is selected
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // if header is tap -> filter item, otherwise, display dettail
+        if indexPath.section == 0{
+            filterItems()
+        }else{
+            displayDetail(indexPath: indexPath)
+            // as soon as item is selected, deselect item (I don't want to keep item selected)
+            collectionView.deselectItem(at: indexPath, animated: false)
+        }
+        
+    }
+    // If cell is deselected
+    override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        
+        if indexPath.section == 0{
+            filterItems()
+        }else{
+            displayDetail(indexPath: indexPath)
+        }
+        
+    }
+    
+    // if search bar results is updated
+    func updateSearchResults(for searchController: UISearchController) {
+        filterItems()
+    }
+    
+    
+    // Filter items by both tags and search bar.
+    func filterItems() {
+        let itemsFilteredByTags =  filterByTags(items: items)
+        let itemsFilteredByTagsAndSearchText = filterBySearchText(items: itemsFilteredByTags)
+        updateDataSourceByKeepingItems(filteredItems: itemsFilteredByTagsAndSearchText)
+    }
+    
+    
+    /// This will filter items by current selected Tags
+    /// - Parameters:
+    ///   - items: Items you want to filter
+    /// - Returns: Filtered items. If there is no items, it will return unfiltered passed items.
+    func filterByTags(items: [Movie]) -> [Movie] {
         let selectedIndexPaths = collectionView.indexPathsForSelectedItems
         if let selectedTagIds =  selectedIndexPaths?
             .filter({ $0.section == 0}) // get index path only in header(0) section [[0,2],[0,5]]
@@ -141,27 +221,58 @@ extension CollectionViewController{
                 movie.genre.contains { (genreId) -> Bool in
                     return selectedTagIds.contains(genreId)
                 }
-            }.map {SectionDataType.main($0)} // Convert movie to SectionDataType
-            
-            itemsSnapshot.deleteSections([.main])
-            itemsSnapshot.appendSections([.main])
-            itemsSnapshot.appendItems(filteredItems)
-            dataSource.apply(itemsSnapshot, animatingDifferences: true, completion: nil)
+            }
+            return filteredItems
         }else{
             // restored all data
-            itemsSnapshot.deleteSections([.main])
-            itemsSnapshot.appendSections([.main])
-            itemsSnapshot.appendItems(items.map({SectionDataType.main($0)}))
-            dataSource.apply(itemsSnapshot, animatingDifferences: true, completion: nil)
+            return items
         }
     }
     
     
-    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        updateItems()
+    /// This will filter items by current search bar text
+    /// - Parameters:
+    ///   - items: Items you want to filter
+    /// - Returns: Filtered items. If there is no items, it will return unfiltered passed items.
+    func filterBySearchText(items: [Movie]) -> [Movie] {
+        if let searchString = searchController.searchBar.text, !searchString.isEmpty{
+            let filteredItems = items.filter({$0.title.localizedCaseInsensitiveContains(searchString)})
+            return filteredItems
+        }else{
+            return items
+        }
     }
-    override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        updateItems()
+    
+    
+    /// This will update and apply snapshot and data source by items you want to keep
+    /// - Parameter filteredItems: the items you want to keep
+    func updateDataSourceByKeepingItems(filteredItems: [Movie]){
+        itemsSnapshot.deleteSections([.main])
+        itemsSnapshot.appendSections([.main])
+        itemsSnapshot.appendItems(filteredItems.map({SectionDataType.main($0)}))
+        dataSource.apply(itemsSnapshot, animatingDifferences: true, completion: nil)
+    }
+}
+
+
+// MARK: - Search Bar config
+extension CollectionViewController: UISearchResultsUpdating{
+    
+    func setUpSearchController(){
+        searchController.searchResultsUpdater = self // like delegate = self
+        searchController.obscuresBackgroundDuringPresentation  = false // disable dark background
+        searchController.searchBar.placeholder = "Search Titles"
+        navigationItem.searchController = searchController
+    }
+    
+    
+    // This will show search bar without scrolling by default
+    override func viewDidAppear(_ animated: Bool) {
+      super.viewDidAppear(animated)
+      UIView.performWithoutAnimation {
+        navigationItem.searchController?.isActive = true
+        navigationItem.searchController?.isActive = false
+      }
     }
 }
 
@@ -216,35 +327,40 @@ extension CollectionViewController{
                 heightDimension: .fractionalHeight(1.0)
             )
         )
-        item.contentInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
+        item.contentInsets = .init(top: 4, leading: 4, bottom: 4, trailing: 4)
         
         
-        let numOfColumns = { () -> Int in
+        let group = { () -> NSCollectionLayoutGroup in
             switch style{
             case .grid:
-                return 2
+                return NSCollectionLayoutGroup.horizontal(
+                    layoutSize: .init(
+                        widthDimension: .fractionalWidth(1.0),
+                        heightDimension: .fractionalWidth(3/4)
+                    ),
+                    subitem: item,
+                    count: 2
+                )
             case .column:
-                return 1
+                return NSCollectionLayoutGroup.horizontal(
+                    layoutSize: .init(
+                        widthDimension: .fractionalWidth(1.0),
+                        heightDimension: .fractionalWidth(2/3)
+                    ),
+                    subitem: item,
+                    count: 1
+                )
             }
         }()
         
-        let group = NSCollectionLayoutGroup.horizontal(
-            layoutSize: .init(
-                widthDimension: .fractionalWidth(1.0),
-                heightDimension: .fractionalWidth((2/3)/CGFloat(numOfColumns))
-            ),
-            subitem: item,
-            count: numOfColumns
-        )
+        
+        group.contentInsets = .init(top: 0, leading: 4, bottom: 0, trailing: 4)
         
         let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = .init(top: 4, leading: 0, bottom: 4, trailing: 0)
         return section
     }
-    
-    
 
-    
-    
 }
 
 
