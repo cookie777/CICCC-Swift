@@ -24,7 +24,7 @@ class NetworkController{
               return
             }
             guard let image = UIImage(data: data) else {
-//              print("error: couldn't get dat or couldn't convert data into image")
+                completionHandler(nil)
               return
             }
             completionHandler(image)

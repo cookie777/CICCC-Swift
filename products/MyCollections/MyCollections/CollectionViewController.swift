@@ -72,9 +72,11 @@ class CollectionViewController: UICollectionViewController, UISearchControllerDe
         
         // Navigation bar config
         navigationItem.title = "Trend Movies"
-        
-
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.8)]
+        navigationController?.navigationBar.tintColor = UIColor.systemPink.withAlphaComponent(0.8)
+        navigationController?.navigationBar.barTintColor = .black
         setUpSearchController()
+        
     
     }
     
@@ -136,11 +138,24 @@ extension CollectionViewController: UIViewControllerTransitioningDelegate{
     
     func displayDetail(indexPath: IndexPath) {
 
+        // get current selected cell
         guard let cell = collectionView!.cellForItem(at: indexPath) as? ItemCollectionViewCell else {return}
+        // create nextVC base on current cell
         let nextVC = ItemDetailViewController(item: cell.item, image: cell.imageView.image)
-        nextVC.transitioningDelegate = self
+        
+        // This will cover all screen
         nextVC.modalPresentationStyle = .overCurrentContext
-        present(nextVC, animated: true, completion: nil)
+        // This enable to use custom transition
+        nextVC.transitioningDelegate = self
+        
+        // If you're using Search Bar controller, it's "presented"
+        // You can present two VC at same time, so get the current presented view and try to present on that.
+        if let presentedVC = self.presentedViewController{
+            presentedVC.present(nextVC, animated: true, completion: nil)
+        }else{
+            self.present(nextVC, animated: true, completion: nil)
+        }
+        
         
     }
     
@@ -169,6 +184,7 @@ extension CollectionViewController: UIViewControllerTransitioningDelegate{
 extension CollectionViewController{
     // If cell is selected
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
         // if header is tap -> filter item, otherwise, display dettail
         if indexPath.section == 0{
             filterItems()
@@ -263,6 +279,8 @@ extension CollectionViewController: UISearchResultsUpdating{
         searchController.obscuresBackgroundDuringPresentation  = false // disable dark background
         searchController.searchBar.placeholder = "Search Titles"
         navigationItem.searchController = searchController
+        collectionView.setContentOffset(.zero, animated: false)
+        
     }
     
     

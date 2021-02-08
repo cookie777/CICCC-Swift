@@ -16,9 +16,13 @@ class ItemCollectionViewCell: UICollectionViewCell {
     }
     var label = UILabel()
     
-    var imagePlaceholder : UIImage = {
-        let img = UIImage(systemName: "photo" ,withConfiguration: UIImage.SymbolConfiguration.init(weight: .thin))?.withTintColor(.systemGray6, renderingMode: .alwaysOriginal)
-        return img!
+    static var imagePlaceholder : UIImage = {
+        let size : CGSize = .init(width: 1, height: 1)
+        let img = UIGraphicsImageRenderer(size: size).image { rendererContext in
+            UIColor.init(displayP3Red: 20/255, green: 20/255, blue: 20/255, alpha: 1).setFill()
+            rendererContext.fill(.init(origin: .zero, size: size))
+        }
+        return img
     }()
         
     var imageView :UIImageView = {
@@ -48,17 +52,18 @@ class ItemCollectionViewCell: UICollectionViewCell {
     func updateCell() {
         label.text = item.title
         
-        
         // Fetch image
-        imageView.image = imagePlaceholder
+        imageView.image = ItemCollectionViewCell.imagePlaceholder
         guard let path = item.posterURL else {return}
         let fetchURL = "https://image.tmdb.org/t/p/w400/\(path)"
         NetworkController.shared.fetchImage(urlStr: fetchURL, completionHandler: {[weak self] image in
-
-            guard let image = image else {return}
-            
             DispatchQueue.main.async {
-                self?.imageView.image = image
+                if let image = image{
+                    self?.imageView.image = image
+                }else{
+                    // I don't know why but I have to override again. Otherwise sometimes it shows previous image.
+                    self?.imageView.image = ItemCollectionViewCell.imagePlaceholder
+                }
                 
             }
             
