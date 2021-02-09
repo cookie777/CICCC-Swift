@@ -11,7 +11,9 @@ class TagCollectionViewCell: UICollectionViewCell {
     
     var label :  UILabel = {
         let lb =  UILabel()
-        lb.textColor =  UIColor.white.withAlphaComponent(0.8)
+        lb.text = " "
+        lb.textColor =  UIColor.white.withAlphaComponent(0.6)
+        lb.textAlignment = .center
         return lb
     }()
     
@@ -19,9 +21,9 @@ class TagCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         contentView.backgroundColor = UIColor.systemGray.withAlphaComponent(0.3)
         contentView.addSubview(label)
-        label.centerXYin(contentView)
+        label.matchParent(padding: .init(top: 4, left: 16, bottom: 4, right: 16))
         
-        contentView.layer.cornerRadius = 8
+        contentView.layer.cornerRadius = 10
     }
     
     required init?(coder: NSCoder) {

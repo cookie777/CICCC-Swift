@@ -1,21 +1,63 @@
 //
-//  Movie.swift
+//  Item.swift
 //  MyCollections
 //
-//  Created by Takayuki Yamaguchi on 2021-02-04.
+//  Created by Takayuki Yamaguchi on 2021-02-08.
 //
 
 import Foundation
 
-struct Movie: Hashable {
-    var id : Int
-    var title : String
-    var posterURL : String?
-    var rating : Double
-    var reviewCount : Int
-    var genre : [Int]
+enum Item: Hashable {
+    case tag(Int)
+    case movie(Movie)
+    
+    
+    // return associated value. (Computed var)
+    var tagId: Int?{
+        if case .tag(let tagId) = self{ // if you can extract associated value as certain type
+            return tagId
+        }else{
+            return nil
+        }
+    }
+    var movie: Movie?{
+        if case .movie(let movie) = self{
+            return movie
+        }else{
+            return nil
+        }
+    }
+    
+    static var movieGenres : [Int : String]  = [
+            28:     "Action",
+            12:     "Adventure",
+            16:     "Animation",
+            35:     "Comedy",
+            80:     "Crime",
+            99:     "Documentary",
+            18:     "Drama",
+            10751:  "Family",
+            14:     "Fantasy",
+            36:     "History",
+            27:     "Horror",
+            10402:  "Music",
+            9648:   "Mystery",
+            10749:  "Romance",
+            878:    "Science Fiction",
+            10770:  "TV Movie",
+            53:     "Thriller",
+            10752:  "War",
+            37:     "Western"
+    ]
 
-    static var sampleData : [Movie] = [
+    
+    
+    static var allTagIds : [Item]  = {
+        return movieGenres.map {Item.tag($0.key)}
+    }()
+    
+
+    static var originalSampleMovies : [Movie] = [
         Movie(
             id: 299536,
             title: "Avengers: Infinity War",
@@ -134,4 +176,10 @@ struct Movie: Hashable {
               ]
         ),
     ]
+    
+    static var allMovies : [Item] = {
+        return  originalSampleMovies.map { Item.movie($0)}
+    }()
+        
+        
 }

@@ -14,7 +14,6 @@ class ItemCollectionViewCell: UICollectionViewCell {
             updateCell()
         }
     }
-    var label = UILabel()
     
     static var imagePlaceholder : UIImage = {
         let size : CGSize = .init(width: 1, height: 1)
@@ -37,8 +36,6 @@ class ItemCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         contentView.backgroundColor = .clear
         
-        contentView.addSubview(label)
-        label.centerXYin(contentView)
         
         contentView.addSubview(imageView)
         imageView.matchParent()
@@ -50,10 +47,9 @@ class ItemCollectionViewCell: UICollectionViewCell {
     }
     
     func updateCell() {
-        label.text = item.title
-        
         // Fetch image
         imageView.image = ItemCollectionViewCell.imagePlaceholder
+        
         guard let path = item.posterURL else {return}
         let fetchURL = "https://image.tmdb.org/t/p/w400/\(path)"
         NetworkController.shared.fetchImage(urlStr: fetchURL, completionHandler: {[weak self] image in

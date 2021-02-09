@@ -57,8 +57,9 @@ class ItemDetailViewController: UIViewController {
         self.titleLabel.text = item.title
         self.ratingLabel.text = "\(item.rating)/10 (\(item.reviewCount))"
         
+
         let genreNames = item.genre.reduce("") { (str, genreId) -> String in
-            if let genreName = movieGenre[genreId]{
+            if let genreName = Item.movieGenres[genreId]{
                 return "\(str)\(genreName), "
             }
             return str

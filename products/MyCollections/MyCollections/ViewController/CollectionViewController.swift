@@ -7,6 +7,17 @@
 
 import UIKit
 
+// MARK: - Enum
+
+enum Section: Hashable {
+    case header
+    case main
+}
+
+enum Layout {
+    case grid
+    case column
+}
 
 
 class CollectionViewController: UICollectionViewController, UISearchControllerDelegate {
@@ -17,11 +28,11 @@ class CollectionViewController: UICollectionViewController, UISearchControllerDe
     private var itemColumnId = "itemColumn"
     private lazy var itemReuseIdentifier = activeLayout == .grid ? itemGridId : itemColumnId
     
-    var itemTagIds = movieGenre.map {$0.key}
-    var items = Movie.sampleData
+    var itemTagIds = Item.movieGenres.map{$0.key}
+//    var items = Item.originalSampleMovies
     
-    var itemsSnapshot: NSDiffableDataSourceSnapshot<Section, SectionDataType>!
-    var dataSource: UICollectionViewDiffableDataSource<Section, SectionDataType>!
+    var itemsSnapshot: NSDiffableDataSourceSnapshot<Section, Item>!
+    var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
     
     let searchController = UISearchController()
     
@@ -62,9 +73,9 @@ class CollectionViewController: UICollectionViewController, UISearchControllerDe
         self.collectionView!.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: tagReuseIdentifier)
         self.collectionView!.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: itemGridId)
         self.collectionView!.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: itemColumnId)
+
         createSnapshot()
         createDataSource()
-        
         // Collection View config : Layout
         collectionView.backgroundColor = .label
         activeLayout = .grid // This will automatically set leftButton and layout.
@@ -77,7 +88,8 @@ class CollectionViewController: UICollectionViewController, UISearchControllerDe
         navigationController?.navigationBar.barTintColor = .black
         setUpSearchController()
         
-    
+        collectionView.reloadData()
+
     }
     
     @objc func leftButtonTapped(_ sender: UIBarButtonItem){
@@ -88,6 +100,7 @@ class CollectionViewController: UICollectionViewController, UISearchControllerDe
             activeLayout = .grid
         }
     }
+    
 }
 
 
@@ -95,34 +108,30 @@ class CollectionViewController: UICollectionViewController, UISearchControllerDe
 // MARK: - DataSource config
 extension CollectionViewController{
     private func createSnapshot(){
-        itemsSnapshot = NSDiffableDataSourceSnapshot<Section, SectionDataType>()
+        itemsSnapshot = NSDiffableDataSourceSnapshot<Section,Item>()
         itemsSnapshot.appendSections([.header,.main])
-        itemTagIds.forEach{ tagId in
-            itemsSnapshot.appendItems([.header(tagId)], toSection: .header)
-        }
-        items.forEach{ item in
-            itemsSnapshot.appendItems([.main(item)], toSection: .main)
-        }
+        
+        itemsSnapshot.appendItems(Item.allTagIds, toSection: .header)
+        itemsSnapshot.appendItems(Item.allMovies, toSection: .main)
+
     }
     
     private func createDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Section, SectionDataType>(collectionView: collectionView, cellProvider: { (collectionView, indexPath, item) -> UICollectionViewCell? in
-            
+        dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { (collectionView, indexPath, item) -> UICollectionViewCell? in
             switch indexPath.section{
             case 0:
-                // Pull cell
+                // Set cell
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.tagReuseIdentifier, for: indexPath) as! TagCollectionViewCell
-                // item is  .header(associated value), if you can extract associated value as tagId
-                if case .header(let tagId) = item{
-                    cell.updateCell(str: movieGenre[tagId]!) 
+                
+                if let tagId = item.tagId, let genreName = Item.movieGenres[tagId]{
+                    cell.updateCell(str: genreName)
                 }
+
                 return cell
                 
             case 1:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.itemReuseIdentifier, for: indexPath) as! ItemCollectionViewCell
-                if case .main(let movie) = item{
-                    cell.item = movie
-                }
+                cell.item = item.movie
                 return cell
             default:
                 return UICollectionViewCell()
@@ -260,7 +269,7 @@ extension CollectionViewController{
     func updateDataSourceByKeepingItems(filteredItems: [Movie]){
         itemsSnapshot.deleteSections([.main])
         itemsSnapshot.appendSections([.main])
-        itemsSnapshot.appendItems(filteredItems.map({SectionDataType.main($0)}))
+        itemsSnapshot.appendItems(filteredItems.map({Item.movie($0)}))
         dataSource.apply(itemsSnapshot, animatingDifferences: true, completion: nil)
     }
 }
@@ -305,7 +314,7 @@ extension CollectionViewController{
     func createHeaderSection() -> NSCollectionLayoutSection {
         let item = NSCollectionLayoutItem(
             layoutSize: .init(
-                widthDimension: .estimated(100), // override layter
+                widthDimension: .estimated(80),
                 heightDimension: .fractionalHeight(1.0)
             )
         )
@@ -319,8 +328,9 @@ extension CollectionViewController{
         )
         
         let section = NSCollectionLayoutSection(group: group)
-        section.orthogonalScrollingBehavior = .continuous
-        section.interGroupSpacing = 8
+        section.interGroupSpacing = 12
+        section.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 8)
+        section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
         return section
     }
     
@@ -369,19 +379,4 @@ extension CollectionViewController{
 }
 
 
-// MARK: - Enum
-
-enum Section: String {
-    case header = "Header"
-    case main = "Main"
-}
-enum SectionDataType: Hashable {
-    case header(Int)
-    case main(Movie)
-}
-
-enum Layout {
-    case grid
-    case column
-}
 
