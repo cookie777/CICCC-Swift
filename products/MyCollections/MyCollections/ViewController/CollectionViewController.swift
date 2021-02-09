@@ -14,6 +14,10 @@ enum Section: Hashable {
     case main
 }
 
+enum SupplementaryViewKind {
+  static let header = "header"
+}
+
 enum Layout {
     case grid
     case column
@@ -28,11 +32,12 @@ class CollectionViewController: UICollectionViewController, UISearchControllerDe
     private var itemColumnId = "itemColumn"
     private lazy var itemReuseIdentifier = activeLayout == .grid ? itemGridId : itemColumnId
     
-    var itemTagIds = Item.movieGenres.map{$0.key}
-//    var items = Item.originalSampleMovies
+    var itemTagIds = SectionData.allTagIds.map{$0.tagId}
+    var items = SectionData.allMovies.map{$0.movie!}
     
-    var itemsSnapshot: NSDiffableDataSourceSnapshot<Section, Item>!
-    var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
+    let sections : [Section] = [.header, .main]
+    var itemsSnapshot: NSDiffableDataSourceSnapshot<Section, SectionData>!
+    var dataSource: UICollectionViewDiffableDataSource<Section, SectionData>!
     
     let searchController = UISearchController()
     
@@ -73,6 +78,8 @@ class CollectionViewController: UICollectionViewController, UISearchControllerDe
         self.collectionView!.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: tagReuseIdentifier)
         self.collectionView!.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: itemGridId)
         self.collectionView!.register(ItemCollectionViewCell.self, forCellWithReuseIdentifier: itemColumnId)
+        
+        self.collectionView!.register(SectionHeaderView.self, forSupplementaryViewOfKind: SupplementaryViewKind.header, withReuseIdentifier: SectionHeaderView.reuseIdentifier)
 
         createSnapshot()
         createDataSource()
@@ -80,15 +87,21 @@ class CollectionViewController: UICollectionViewController, UISearchControllerDe
         collectionView.backgroundColor = .label
         activeLayout = .grid // This will automatically set leftButton and layout.
         collectionView.allowsMultipleSelection = true
+        // Scroll to top by default
+        collectionView.setContentOffset(.zero, animated: false)
         
         // Navigation bar config
-        navigationItem.title = "Trend Movies"
+        navigationItem.title = "My Movies"
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.8)]
         navigationController?.navigationBar.tintColor = UIColor.systemPink.withAlphaComponent(0.8)
         navigationController?.navigationBar.barTintColor = .black
         setUpSearchController()
         
+
+        // This is to adjust dynamic cell size
         collectionView.reloadData()
+        
+        
 
     }
     
@@ -108,35 +121,44 @@ class CollectionViewController: UICollectionViewController, UISearchControllerDe
 // MARK: - DataSource config
 extension CollectionViewController{
     private func createSnapshot(){
-        itemsSnapshot = NSDiffableDataSourceSnapshot<Section,Item>()
+        itemsSnapshot = NSDiffableDataSourceSnapshot<Section,SectionData>()
         itemsSnapshot.appendSections([.header,.main])
         
-        itemsSnapshot.appendItems(Item.allTagIds, toSection: .header)
-        itemsSnapshot.appendItems(Item.allMovies, toSection: .main)
+        itemsSnapshot.appendItems(SectionData.allTagIds, toSection: .header)
+        itemsSnapshot.appendItems(SectionData.allMovies, toSection: .main)
 
     }
     
     private func createDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView, cellProvider: { (collectionView, indexPath, item) -> UICollectionViewCell? in
-            switch indexPath.section{
-            case 0:
+        dataSource = UICollectionViewDiffableDataSource<Section, SectionData>(collectionView: collectionView, cellProvider: { (collectionView, indexPath, item) -> UICollectionViewCell? in
+            switch self.sections[indexPath.section]{
+            case .header:
                 // Set cell
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.tagReuseIdentifier, for: indexPath) as! TagCollectionViewCell
                 
-                if let tagId = item.tagId, let genreName = Item.movieGenres[tagId]{
+                if let tagId = item.tagId, let genreName = SectionData.movieGenres[tagId]{
                     cell.updateCell(str: genreName)
                 }
 
                 return cell
                 
-            case 1:
+            case .main:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.itemReuseIdentifier, for: indexPath) as! ItemCollectionViewCell
                 cell.item = item.movie
                 return cell
-            default:
-                return UICollectionViewCell()
             }
         })
+        
+        
+        dataSource.supplementaryViewProvider = { collectionView, kind, indexPath -> UICollectionReusableView? in
+            
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: SupplementaryViewKind.header, withReuseIdentifier: SectionHeaderView.reuseIdentifier, for: indexPath) as! SectionHeaderView
+            
+            headerView.setTitle("Trending")
+            
+            return headerView
+        }
+            
         
         
         dataSource.apply(itemsSnapshot)
@@ -190,21 +212,23 @@ extension CollectionViewController{
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         // if header is tap -> filter item, otherwise, display dettail
-        if indexPath.section == 0{
+        switch sections[indexPath.section]{
+        case .header:
             filterItems()
-        }else{
+        case .main:
             displayDetail(indexPath: indexPath)
             // as soon as item is selected, deselect item (I don't want to keep item selected)
             collectionView.deselectItem(at: indexPath, animated: false)
         }
-        
     }
+    
     // If cell is deselected
     override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         
-        if indexPath.section == 0{
+        switch sections[indexPath.section]{
+        case .header:
             filterItems()
-        }else{
+        case .main:
             displayDetail(indexPath: indexPath)
         }
         
@@ -231,7 +255,7 @@ extension CollectionViewController{
     func filterByTags(items: [Movie]) -> [Movie] {
         let selectedIndexPaths = collectionView.indexPathsForSelectedItems
         if let selectedTagIds =  selectedIndexPaths?
-            .filter({ $0.section == 0}) // get index path only in header(0) section [[0,2],[0,5]]
+            .filter({ sections[$0.section] == .header}) // get index path only in header(0) section [[0,2],[0,5]]
             .compactMap({$0[1]}) // get only item(row) element [2,5]
             .map({itemTagIds[$0]}), // get actually genre Id array [223, 5463]
            selectedTagIds.count > 0 // and if more than 1 tags are selected
@@ -269,7 +293,7 @@ extension CollectionViewController{
     func updateDataSourceByKeepingItems(filteredItems: [Movie]){
         itemsSnapshot.deleteSections([.main])
         itemsSnapshot.appendSections([.main])
-        itemsSnapshot.appendItems(filteredItems.map({Item.movie($0)}))
+        itemsSnapshot.appendItems(filteredItems.map({SectionData.movie($0)}))
         dataSource.apply(itemsSnapshot, animatingDifferences: true, completion: nil)
     }
 }
@@ -284,7 +308,6 @@ extension CollectionViewController: UISearchResultsUpdating{
         searchController.searchBar.placeholder = "Search Titles"
         UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white.withAlphaComponent(0.5)]
         navigationItem.searchController = searchController
-        collectionView.setContentOffset(.zero, animated: false)
         navigationItem.hidesSearchBarWhenScrolling = false
         
     }
@@ -299,12 +322,12 @@ extension CollectionViewController{
         
         return UICollectionViewCompositionalLayout { [weak self] (sectionIndex, layoutEnvironment) -> NSCollectionLayoutSection? in
             
-            switch sectionIndex {
-            case 0:
+            switch self?.sections[sectionIndex] {
+            case .header:
                 return self?.createHeaderSection()
-            case 1:
+            case .main:
                 return self?.createBodySection(style: style)
-            default:
+            case .none:
                 return nil
             }
         }
@@ -372,7 +395,24 @@ extension CollectionViewController{
         group.contentInsets = .init(top: 0, leading: 4, bottom: 0, trailing: 4)
         
         let section = NSCollectionLayoutSection(group: group)
+       
+        
+        
+        let headerItem = NSCollectionLayoutBoundarySupplementaryItem(
+          layoutSize: .init(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .estimated(40)
+          ),
+          elementKind: SupplementaryViewKind.header,
+            alignment: .top
+        )
+        headerItem.contentInsets = .init(top: 0, leading: 8, bottom: 0, trailing: 0)
+
+
+        section.boundarySupplementaryItems = [headerItem]
+        
         section.contentInsets = .init(top: 4, leading: 0, bottom: 4, trailing: 0)
+        section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
         return section
     }
 

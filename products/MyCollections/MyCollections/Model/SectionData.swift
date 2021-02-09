@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Item: Hashable {
+enum SectionData: Hashable {
     case tag(Int)
     case movie(Movie)
     
@@ -27,37 +27,19 @@ enum Item: Hashable {
             return nil
         }
     }
-    
-    static var movieGenres : [Int : String]  = [
-            28:     "Action",
-            12:     "Adventure",
-            16:     "Animation",
-            35:     "Comedy",
-            80:     "Crime",
-            99:     "Documentary",
-            18:     "Drama",
-            10751:  "Family",
-            14:     "Fantasy",
-            36:     "History",
-            27:     "Horror",
-            10402:  "Music",
-            9648:   "Mystery",
-            10749:  "Romance",
-            878:    "Science Fiction",
-            10770:  "TV Movie",
-            53:     "Thriller",
-            10752:  "War",
-            37:     "Western"
-    ]
 
     
     
-    static var allTagIds : [Item]  = {
-        return movieGenres.map {Item.tag($0.key)}
+    static var allTagIds : [SectionData]  = {
+        return movieGenres.map {SectionData.tag($0.key)}
     }()
-    
-
-    static var originalSampleMovies : [Movie] = [
+        
+    static var allMovies : [SectionData] = {
+        return  originalSampleMovies.map { SectionData.movie($0)}
+    }()
+        
+        
+    static let originalSampleMovies : [Movie] = [
         Movie(
             id: 299536,
             title: "Avengers: Infinity War",
@@ -177,9 +159,25 @@ enum Item: Hashable {
         ),
     ]
     
-    static var allMovies : [Item] = {
-        return  originalSampleMovies.map { Item.movie($0)}
-    }()
-        
-        
+    static var movieGenres : [Int : String]  = [
+            28:     "Action",
+            12:     "Adventure",
+            16:     "Animation",
+            35:     "Comedy",
+            80:     "Crime",
+            99:     "Documentary",
+            18:     "Drama",
+            10751:  "Family",
+            14:     "Fantasy",
+            36:     "History",
+            27:     "Horror",
+            10402:  "Music",
+            9648:   "Mystery",
+            10749:  "Romance",
+            878:    "Science Fiction",
+            10770:  "TV Movie",
+            53:     "Thriller",
+            10752:  "War",
+            37:     "Western"
+    ]
 }

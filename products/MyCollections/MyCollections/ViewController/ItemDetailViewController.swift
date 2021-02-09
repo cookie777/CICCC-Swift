@@ -59,7 +59,7 @@ class ItemDetailViewController: UIViewController {
         
 
         let genreNames = item.genre.reduce("") { (str, genreId) -> String in
-            if let genreName = Item.movieGenres[genreId]{
+            if let genreName = SectionData.movieGenres[genreId]{
                 return "\(str)\(genreName), "
             }
             return str
