@@ -10,12 +10,13 @@ import UIKit
 
 class SectionHeaderView: UICollectionReusableView {
     
-    static let reuseIdentifier = "SectionHeaderView"
-    
+    static let firstReuseIdentifier = "FirstSectionHeaderView"
+    static let secondReuseIdentifier = "SecondSectionHeaderView"
+
 
     let label: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: 32, weight: .black)
         label.textColor = .label
         label.textAlignment = .left
         label.textColor = UIColor.white.withAlphaComponent(0.8)
@@ -40,5 +41,9 @@ class SectionHeaderView: UICollectionReusableView {
     
     func setTitle(_ title: String) {
         label.text = title
+    }
+    
+    func setTopSpace(top: CGFloat) {
+        stackView.spacing = top
     }
 }

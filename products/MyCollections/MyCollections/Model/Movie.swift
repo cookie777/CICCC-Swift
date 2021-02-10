@@ -8,6 +8,8 @@
 import Foundation
 
 struct Movie: Hashable {
+    
+    
     var id : Int
     var title : String
     var posterURL : String?
@@ -16,3 +18,4 @@ struct Movie: Hashable {
     var genre : [Int]
 
 }
+

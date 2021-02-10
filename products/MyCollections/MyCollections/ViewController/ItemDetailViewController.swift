@@ -57,18 +57,16 @@ class ItemDetailViewController: UIViewController {
         self.titleLabel.text = item.title
         self.ratingLabel.text = "\(item.rating)/10 (\(item.reviewCount))"
         
-
-        let genreNames = item.genre.reduce("") { (str, genreId) -> String in
-            if let genreName = SectionData.movieGenres[genreId]{
-                return "\(str)\(genreName), "
-            }
-            return str
-        }
+        let genreNames = SectionData.getGenreNames(genreIds: item.genre)
+        
         self.tagsLabel.text = "\(genreNames)"
         
         super.init(nibName: nil, bundle: nil)
     }
-    
+    init() {        
+        super.init(nibName: nil, bundle: nil)
+    }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
