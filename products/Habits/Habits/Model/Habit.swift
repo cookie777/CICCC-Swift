@@ -34,9 +34,29 @@ extension Color: Codable{
   }
 }
 
-extension Habit: Codable{
-  
+extension Category: Codable {}
+extension Habit: Codable{}
+
+extension Habit: Hashable{
+  static func == (lhs: Habit, rhs: Habit) -> Bool {
+    return lhs.name == rhs.name
+  }
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(name)
+  }
 }
-extension Category: Codable{
+extension Habit: Comparable{ // This is to make absolute order (so that each time lists won't shuffle)
+  static func < (lhs: Habit, rhs: Habit) -> Bool {
+    return lhs.name < rhs.name
+  }
+}
+
+extension Category: Hashable{
+  static func == (lhs: Category, rhs: Category) -> Bool {
+    return lhs.name == rhs.name
+  }
   
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(name)
+  }
 }

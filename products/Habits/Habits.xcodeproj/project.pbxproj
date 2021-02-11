@@ -19,6 +19,8 @@
 		483A157425D511E400B6C562 /* UserDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483A157325D511E400B6C562 /* UserDetailViewController.swift */; };
 		483A158125D519C900B6C562 /* Habit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483A158025D519C900B6C562 /* Habit.swift */; };
 		483A158525D51C8500B6C562 /* APIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483A158425D51C8500B6C562 /* APIRequest.swift */; };
+		484C58F925D5DEF6002B74CD /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484C58F825D5DEF6002B74CD /* Settings.swift */; };
+		484C58FC25D5E853002B74CD /* UICollectionViewDiffableDataSource+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484C58FB25D5E853002B74CD /* UICollectionViewDiffableDataSource+ViewModel.swift */; };
 		485F6EB425D521D800EA79D1 /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485F6EB325D521D800EA79D1 /* APIService.swift */; };
 /* End PBXBuildFile section */
 
@@ -37,6 +39,8 @@
 		483A157325D511E400B6C562 /* UserDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailViewController.swift; sourceTree = "<group>"; };
 		483A158025D519C900B6C562 /* Habit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Habit.swift; sourceTree = "<group>"; };
 		483A158425D51C8500B6C562 /* APIRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRequest.swift; sourceTree = "<group>"; };
+		484C58F825D5DEF6002B74CD /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		484C58FB25D5E853002B74CD /* UICollectionViewDiffableDataSource+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionViewDiffableDataSource+ViewModel.swift"; sourceTree = "<group>"; };
 		485F6EB325D521D800EA79D1 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -72,6 +76,8 @@
 			children = (
 				483A158425D51C8500B6C562 /* APIRequest.swift */,
 				485F6EB325D521D800EA79D1 /* APIService.swift */,
+				484C58FB25D5E853002B74CD /* UICollectionViewDiffableDataSource+ViewModel.swift */,
+				484C58F825D5DEF6002B74CD /* Settings.swift */,
 				483A157C25D5198D00B6C562 /* Model */,
 				483A157B25D5198200B6C562 /* ViewController */,
 				483A157925D5197100B6C562 /* Supports */,
@@ -194,7 +200,9 @@
 				483A157425D511E400B6C562 /* UserDetailViewController.swift in Sources */,
 				483A156825D5117F00B6C562 /* HabitCollectionViewController.swift in Sources */,
 				485F6EB425D521D800EA79D1 /* APIService.swift in Sources */,
+				484C58FC25D5E853002B74CD /* UICollectionViewDiffableDataSource+ViewModel.swift in Sources */,
 				483A157125D511DA00B6C562 /* HabitDetailViewController.swift in Sources */,
+				484C58F925D5DEF6002B74CD /* Settings.swift in Sources */,
 				483A155025D50FF200B6C562 /* AppDelegate.swift in Sources */,
 				483A158125D519C900B6C562 /* Habit.swift in Sources */,
 				483A155225D50FF200B6C562 /* SceneDelegate.swift in Sources */,

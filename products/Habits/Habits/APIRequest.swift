@@ -55,7 +55,6 @@ extension APIRequest {
 extension APIRequest where Response: Decodable{
   
   func send(completion: @escaping ((Result<Response, Error>) -> Void)){
-    
     URLSession.shared.dataTask(with: request){ (data, _ , error) in
       do {
         if let data = data {
