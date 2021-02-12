@@ -7,14 +7,15 @@
 
 import UIKit
 
-private let reuseIdentifier = "ListCell"
+private let sectionHeaderKind = "SectionHeader"
+private let sectionHeaderIdentifier = "HeaderView"
 
 
 // MARK: - Define Model and View model
 class HabitCollectionViewController: UICollectionViewController {
   // Rename dataType as simple
   typealias DataSourceType = UICollectionViewDiffableDataSource<ViewModel.Section, ViewModel.Item>
-  typealias SnapshotType = NSDiffableDataSourceSnapshot<ViewModel.Section, ViewModel.Item>
+
   
   // Wrapping section and item
   enum ViewModel {
@@ -68,7 +69,9 @@ extension HabitCollectionViewController {
     collectionView.backgroundColor = .systemBackground
     
     // Register cell classes
-    self.collectionView!.register(UICollectionViewListCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+    self.collectionView!.register(HabitCollectionViewCell.self, forCellWithReuseIdentifier: HabitCollectionViewCell.HabitReusableIdentifier)
+    
+    self.collectionView!.register(NamedSectionHeaderView.self, forSupplementaryViewOfKind: sectionHeaderKind , withReuseIdentifier: sectionHeaderIdentifier)
     
     dataSource = createDataSource()
     collectionView.dataSource = dataSource
@@ -79,6 +82,22 @@ extension HabitCollectionViewController {
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     update()
+  }
+  
+  // If you do a long press at cell,
+  override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+    
+    let config = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+      
+      let item = self.dataSource.itemIdentifier(for: indexPath)!
+      let favoriteToggle = UIAction(title: item.isFavorite ? "Unfavorite" : "Favorite") { (action) in
+        // if you did action -> toggle favorite status and update UI
+        Settings.shared.toggleFavorite(item.habit)
+        self.updateCollectionView()
+      }
+      return UIMenu(title: "", image: nil, identifier: nil, options: [], children: [favoriteToggle])
+    }
+    return config
   }
 }
 
@@ -138,16 +157,33 @@ extension HabitCollectionViewController {
   }
   
   func createDataSource() -> DataSourceType {
+    
+    // Config cell
     let dataSource = DataSourceType(collectionView: collectionView) {
       (collectionView, indexPath, item) in
       
-      let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! UICollectionViewListCell
+      let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HabitCollectionViewCell.HabitReusableIdentifier, for: indexPath) as! HabitCollectionViewCell
       
-      var content = UIListContentConfiguration.valueCell()
-      content.text = item.habit.name
-      cell.contentConfiguration = content
+      cell.primaryTextLabel.text = item.habit.name
       return cell
     }
+    
+    // Config header(footer) view
+    dataSource.supplementaryViewProvider = { (collectionView, kind,indexPath) in
+      let header = collectionView.dequeueReusableSupplementaryView(ofKind: sectionHeaderKind, withReuseIdentifier: sectionHeaderIdentifier, for: indexPath) as! NamedSectionHeaderView
+      
+      let section = dataSource.snapshot().sectionIdentifiers[indexPath.section]
+      
+      switch section {
+      case .favorites:
+        header.nameLabel.text = "Favorites"
+      case .category(let category):
+        header.nameLabel.text = category.name
+      }
+      
+      return header
+    }
+    
     
     return dataSource
   }
@@ -160,12 +196,54 @@ extension HabitCollectionViewController {
     
     return UICollectionViewCompositionalLayout{(sectionIndex, layoutEnvironment) -> NSCollectionLayoutSection? in
       
-      var config = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
+      
+      // Create list layout
+      var config = UICollectionLayoutListConfiguration(appearance: .plain)
       config.backgroundColor = .systemBackground
       let section = NSCollectionLayoutSection.list(using: config, layoutEnvironment: layoutEnvironment)
+      
+      // Create header layout in section
+      let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
+                                              heightDimension: .absolute(36))
+      let sectionHeader =  NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: sectionHeaderKind, alignment: .top)
+      sectionHeader.pinToVisibleBounds = true
+//            sectionHeader.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+      
+      section.contentInsets = NSDirectionalEdgeInsets(top: 0,leading: 8, bottom: 0, trailing: 8)
+      section.boundarySupplementaryItems = [sectionHeader]
       
       return section
     }
     
   }
 }
+
+
+
+
+
+
+//
+//extension HabitCollectionViewController{
+//  func configSnapshot()  {
+//    snapshot = SnapshotType()
+//  }
+//  func configDatasource()  {
+//    //    dataSource
+//  }
+//}
+
+//    let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
+//    let item = NSCollectionLayoutItem(layoutSize: itemSize)
+//
+//    let groupSize =
+//      NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
+//                             heightDimension: .absolute(44))
+//    let group = NSCollectionLayoutGroup.horizontal(layoutSize:
+//                                                    groupSize, subitem: item, count: 1)
+//
+//    let section = NSCollectionLayoutSection(group: group)
+//    section.contentInsets = NSDirectionalEdgeInsets(top: 0,
+//                                                    leading: 10, bottom: 0, trailing: 10)
+//
+//    return UICollectionViewCompositionalLayout(section: section)

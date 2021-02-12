@@ -12,6 +12,7 @@ import Foundation
 
 enum Setting{
   static let favoriteHabits = "favoriteHabits"
+  static let followedUserIDs = "followedUserIDs"
 }
 
 
@@ -43,8 +44,9 @@ struct Settings {
     
     return try! JSONDecoder().decode(T.self, from: data)
   }
-
   
+  
+  // Get and set favoriteHabits
   var favoriteHabits: [Habit]{
     get {
       return unarchiveJSON(key: Setting.favoriteHabits) ?? []
@@ -53,4 +55,25 @@ struct Settings {
       archiveJSON(value: newValue, key: Setting.favoriteHabits)
     }
   }
+  
+  mutating func toggleFavorite(_ habit: Habit) {
+    var favorites = favoriteHabits
+    if favorites.contains(habit) {
+      favorites = favorites.filter { $0 != habit }
+    } else {
+      favorites.append(habit)
+    }
+    favoriteHabits = favorites
+  }
+  
+  
+  var followedUserIDs: [String] {
+    get {
+      return unarchiveJSON(key: Setting.followedUserIDs) ?? []
+    }
+    set{
+      archiveJSON(value: newValue, key: Setting.followedUserIDs)
+    }
+  }
+  
 }
