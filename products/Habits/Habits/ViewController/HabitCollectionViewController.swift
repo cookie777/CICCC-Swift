@@ -11,7 +11,7 @@ private let sectionHeaderKind = "SectionHeader"
 private let sectionHeaderIdentifier = "HeaderView"
 
 
-// MARK: - Define Model and View model
+// MARK: - Defin@objc @objc e Model and View model
 class HabitCollectionViewController: UICollectionViewController {
   // Rename dataType as simple
   typealias DataSourceType = UICollectionViewDiffableDataSource<ViewModel.Section, ViewModel.Item>
@@ -37,7 +37,7 @@ class HabitCollectionViewController: UICollectionViewController {
     }
     
     struct Item: Hashable, Equatable, Comparable {
-      // This is to make absolute order (so that each time lists won't shuffle)
+      // This is to make absolute order (so that each time cells won't shuffle)
       static func < (lhs: Item, rhs: Item) -> Bool {
         return lhs.habit < rhs.habit
       }
@@ -58,6 +58,32 @@ class HabitCollectionViewController: UICollectionViewController {
   var model = Model()
   
   var dataSource  : DataSourceType!
+  
+  
+  // MARK: - Create layout
+  // To override later, I put it here.
+  func createLayout() -> UICollectionViewCompositionalLayout {
+    
+    return UICollectionViewCompositionalLayout{(sectionIndex, layoutEnvironment) -> NSCollectionLayoutSection? in
+
+      let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),heightDimension: .fractionalHeight(1))
+      let item = NSCollectionLayoutItem(layoutSize: itemSize)
+      let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(44))
+      let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
+      
+      // Create header layout in section
+      let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(36))
+      let sectionHeader =  NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: sectionHeaderKind, alignment: .top)
+      sectionHeader.pinToVisibleBounds = true
+
+      let section = NSCollectionLayoutSection(group: group)
+      section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+      section.boundarySupplementaryItems = [sectionHeader]
+      
+      return section
+    }
+    
+  }
   
 }
 
@@ -189,33 +215,7 @@ extension HabitCollectionViewController {
   }
 }
 
-// MARK: - Create layout
-extension HabitCollectionViewController {
-  func createLayout() -> UICollectionViewCompositionalLayout {
-    
-    return UICollectionViewCompositionalLayout{(sectionIndex, layoutEnvironment) -> NSCollectionLayoutSection? in
-      
-      
-      // Create list layout
-      var config = UICollectionLayoutListConfiguration(appearance: .plain)
-      config.backgroundColor = .systemBackground
-      let section = NSCollectionLayoutSection.list(using: config, layoutEnvironment: layoutEnvironment)
-      
-      // Create header layout in section
-      let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
-                                              heightDimension: .absolute(36))
-      let sectionHeader =  NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: sectionHeaderKind, alignment: .top)
-      sectionHeader.pinToVisibleBounds = true
-      //            sectionHeader.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
-      
-      section.contentInsets = NSDirectionalEdgeInsets(top: 0,leading: 8, bottom: 0, trailing: 8)
-      section.boundarySupplementaryItems = [sectionHeader]
-      
-      return section
-    }
-    
-  }
-}
+
 
 // MARK: - vc transaction
 extension HabitCollectionViewController{

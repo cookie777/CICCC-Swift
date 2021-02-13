@@ -5,11 +5,15 @@
 //  Created by Takayuki Yamaguchi on 2021-02-11.
 //
 
-import Foundation
+import UIKit
+
+enum ImageRequestError: Error {
+  case couldNotInitializeFromData
+}
 
 protocol APIRequest {
   associatedtype Response // This is to use generic type in protocol
-
+  
   var path: String { get }
   var queryItems: [URLQueryItem]? { get }
   var request: URLRequest { get }
@@ -57,16 +61,44 @@ extension APIRequest where Response: Decodable{
   func send(completion: @escaping ((Result<Response, Error>) -> Void)){
     URLSession.shared.dataTask(with: request){ (data, _ , error) in
       do {
+        
         if let data = data {
           let decoded = try JSONDecoder().decode(Response.self, from: data)
           completion(.success(decoded))
         }else if let e = error {
+          
           completion(.failure(e))
         }
       }catch{
-        
+        print("decoder error")
       }
     }.resume()
     
+  }
+}
+
+extension APIRequest where Response == UIImage {
+  func send(completion: @escaping (Result<Self.Response, Error>) -> Void) {
+    
+    URLSession.shared.dataTask(with: request) { (data, _, error) in
+      
+      if let data = data,let image = UIImage(data: data) {
+        completion(.success(image))
+      } else if let error = error {
+        completion(.failure(error))
+      } else {
+        completion(.failure(ImageRequestError.couldNotInitializeFromData))
+      }
+    }.resume()
+    
+  }
+}
+
+//“Because you're not expecting a response from this request, there's one wrinkle. You currently have one extension on APIRequest that requires results to adopt Decodable. That doesn't make sense for the Void type”
+extension APIRequest {
+  func send(completion: @escaping (Error?) -> Void) {
+    URLSession.shared.dataTask(with: request) { (_, _, error) in
+      completion(error)
+    }.resume()
   }
 }

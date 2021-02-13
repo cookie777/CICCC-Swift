@@ -20,7 +20,7 @@ enum Setting{
 struct Settings {
   static var shared = Settings()
   private let defaults = UserDefaults.standard
-  
+  let currentUser = User(id: "theRock", name: "Dwayne Johnson", color: nil, bio: "Dwayne Douglas Johnson, also known by his ring name the Rock, is an American-Canadian actor, producer, businessman, retired professional wrestler, and former American football and Canadian football player.")
   
   /// save data <T> into defaults
   /// - Parameters:

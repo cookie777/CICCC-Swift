@@ -6,10 +6,11 @@
 //
 
 import UIKit
-// MARK: - class variables and init
+// MARK: - Class properties and init()
 class HabitDetailViewController: UIViewController {
   
   var habit: Habit!
+  var updateTimer: Timer?
   
   let nameLabel: UILabel = {
     let lb = UILabel()
@@ -99,6 +100,8 @@ class HabitDetailViewController: UIViewController {
   var dataSource: DataSourceType!
   var model = Model()
   
+  
+  
 }
 
 // MARK: - View initialization
@@ -110,18 +113,18 @@ extension HabitDetailViewController {
     view.backgroundColor = .systemBackground
     collectionView.backgroundColor = .systemBackground
     
-    collectionView.register(HabitDetailCollectionViewCell.self, forCellWithReuseIdentifier: HabitDetailCollectionViewCell.HabitDetailReusableIdentifier)
+    collectionView.register(HabitUserDetailCollectionViewCell.self, forCellWithReuseIdentifier: HabitUserDetailCollectionViewCell.HabitDetailReusableIdentifier)
     
     dataSource = createDataSource()
     collectionView.dataSource = dataSource
     collectionView.collectionViewLayout = createLayout()
     update()
     
-    createViews()
+    setupUIViews()
     
   }
   
-  fileprivate func createViews() {
+  fileprivate func setupUIViews() {
     view.addSubview(allWrapper)
     let sa = view.safeAreaLayoutGuide
     allWrapper.anchors(
@@ -148,6 +151,7 @@ extension HabitDetailViewController {
 }
 
 
+// MARK: - fetch data
 extension HabitDetailViewController{
   // fetch data
   func update() {
@@ -168,11 +172,15 @@ extension HabitDetailViewController{
     }
   }
   
+}
+
+// MARK: - data source
+extension HabitDetailViewController{
   // create data source
   func createDataSource() -> DataSourceType {
     return DataSourceType(collectionView: collectionView) {
       (collectionView, indexPath, grouping) -> UICollectionViewCell? in
-      let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HabitDetailCollectionViewCell.HabitDetailReusableIdentifier, for: indexPath) as! HabitDetailCollectionViewCell
+      let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HabitUserDetailCollectionViewCell.HabitDetailReusableIdentifier, for: indexPath) as! HabitUserDetailCollectionViewCell
       
       switch grouping {
       case .single(let userStat):
@@ -189,12 +197,13 @@ extension HabitDetailViewController{
   // update snapshot and apply to data source
   func updateCollectionView() {
     let items = (self.model.habitStatistics?.userCounts.map { ViewModel.Item.single($0) } ?? []).sorted(by: >)
-
+    
     dataSource.applySnapshotUsing(sectionIDs: [.remaining], itemsBySection: [.remaining: items])
   }
-  
+}
 
-  
+// MARK: - collection view layout
+extension HabitDetailViewController{
   func createLayout() -> UICollectionViewCompositionalLayout {
     let itemSize =  NSCollectionLayoutSize(
       widthDimension  : .fractionalWidth(1),
@@ -229,5 +238,23 @@ extension HabitDetailViewController{
     )
     
     return UICollectionViewCompositionalLayout(section: section)
+  }
+}
+
+// MARK: - auto reload (fetch)
+extension HabitDetailViewController {
+  
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    update()
+    updateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+      self.update()
+    }
+  }
+  
+  override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    updateTimer?.invalidate()
+    updateTimer = nil
   }
 }

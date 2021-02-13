@@ -117,4 +117,12 @@ extension UserCollectionViewController {
   }
 }
 
-
+// MARK: - vc transaction
+extension UserCollectionViewController{
+  override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
+    let nextVC = UserDetailViewController(user: item.user)
+    navigationController?.pushViewController(nextVC, animated: true)
+    collectionView.deselectItem(at: indexPath, animated: false)
+  }
+}
