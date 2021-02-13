@@ -13,7 +13,7 @@ class HabitCollectionViewCell: PrimarySecondaryTextCollectionViewCell {
     primaryTextLabel.textAlignment = .left
     primaryTextLabel.matchParent(padding: .init(top: 0, left: 6, bottom: 0, right: 0))
     primaryTextLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-    self.constraintHeight(equalToConstant: 40)
+    self.constraintHeight(equalToConstant: 44)
     
   }
   

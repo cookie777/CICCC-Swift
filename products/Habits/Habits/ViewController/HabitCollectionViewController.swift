@@ -15,7 +15,7 @@ private let sectionHeaderIdentifier = "HeaderView"
 class HabitCollectionViewController: UICollectionViewController {
   // Rename dataType as simple
   typealias DataSourceType = UICollectionViewDiffableDataSource<ViewModel.Section, ViewModel.Item>
-
+  
   
   // Wrapping section and item
   enum ViewModel {
@@ -189,7 +189,6 @@ extension HabitCollectionViewController {
   }
 }
 
-
 // MARK: - Create layout
 extension HabitCollectionViewController {
   func createLayout() -> UICollectionViewCompositionalLayout {
@@ -207,7 +206,7 @@ extension HabitCollectionViewController {
                                               heightDimension: .absolute(36))
       let sectionHeader =  NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: sectionHeaderKind, alignment: .top)
       sectionHeader.pinToVisibleBounds = true
-//            sectionHeader.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+      //            sectionHeader.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
       
       section.contentInsets = NSDirectionalEdgeInsets(top: 0,leading: 8, bottom: 0, trailing: 8)
       section.boundarySupplementaryItems = [sectionHeader]
@@ -218,32 +217,13 @@ extension HabitCollectionViewController {
   }
 }
 
+// MARK: - vc transaction
+extension HabitCollectionViewController{
+  override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
+    let nextVC = HabitDetailViewController(habit: item.habit)
+    navigationController?.pushViewController(nextVC, animated: true)
+    collectionView.deselectItem(at: indexPath, animated: false)
+  }
+}
 
-
-
-
-
-//
-//extension HabitCollectionViewController{
-//  func configSnapshot()  {
-//    snapshot = SnapshotType()
-//  }
-//  func configDatasource()  {
-//    //    dataSource
-//  }
-//}
-
-//    let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
-//    let item = NSCollectionLayoutItem(layoutSize: itemSize)
-//
-//    let groupSize =
-//      NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
-//                             heightDimension: .absolute(44))
-//    let group = NSCollectionLayoutGroup.horizontal(layoutSize:
-//                                                    groupSize, subitem: item, count: 1)
-//
-//    let section = NSCollectionLayoutSection(group: group)
-//    section.contentInsets = NSDirectionalEdgeInsets(top: 0,
-//                                                    leading: 10, bottom: 0, trailing: 10)
-//
-//    return UICollectionViewCompositionalLayout(section: section)

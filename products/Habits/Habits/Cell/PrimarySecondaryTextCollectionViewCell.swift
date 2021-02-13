@@ -11,6 +11,7 @@ class PrimarySecondaryTextCollectionViewCell: UICollectionViewCell {
   
   static let HabitReusableIdentifier = "Habit"
   static let UserReusableIdentifier  = "User"
+  static let HabitDetailReusableIdentifier  = "HabitDetail"
 
   let primaryTextLabel: UILabel = {
     let lb = UILabel()
