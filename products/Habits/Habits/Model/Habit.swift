@@ -5,7 +5,7 @@
 //  Created by Takayuki Yamaguchi on 2021-02-10.
 //
 
-import Foundation
+import UIKit
 
 struct Habit {
   let name: String
@@ -33,6 +33,13 @@ extension Color: Codable{
     case brightness = "b"
   }
 }
+
+extension Color {
+    var uiColor: UIColor {
+        return UIColor(hue: CGFloat(hue), saturation:  CGFloat(saturation), brightness: CGFloat(brightness),  alpha: 1)
+    }
+}
+extension Color: Hashable {}
 
 extension Category: Codable {}
 extension Habit: Codable{}

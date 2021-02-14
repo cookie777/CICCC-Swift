@@ -119,3 +119,4 @@ class LogHabitCollectionViewController: HabitCollectionViewController  {
     LogHabitRequest(trackedEvent: loggedHabit).send { _ in }
   }
 }
+
