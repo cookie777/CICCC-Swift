@@ -84,6 +84,15 @@ class UserDetailViewController: UIViewController {
           return category1.name > category2.name
         }
       }
+      
+      var sectionColor: UIColor {
+        switch self {
+        case .leading:
+          return .systemGray4
+        case .category(let category):
+          return category.color.uiColor
+        }
+      }
     }
     
     typealias Item = HabitCount
@@ -124,7 +133,7 @@ extension UserDetailViewController {
   }
   
   fileprivate func setupUIViews() {
-    view.backgroundColor = .systemBackground
+    view.backgroundColor = user.color?.uiColor ?? .white
     collectionView.backgroundColor = .systemBackground
     
     let sa = view.safeAreaLayoutGuide
@@ -163,20 +172,20 @@ extension UserDetailViewController{
   func updateImage(){
     ImageRequest(imageID: user.id).send { result in
       print(result)
-        switch result {
-        case .success(let image):
-            DispatchQueue.main.async {
-                self.profileImageView.image = image
-            }
-        default: break
+      switch result {
+      case .success(let image):
+        DispatchQueue.main.async {
+          self.profileImageView.image = image
         }
+      default: break
+      }
     }
   }
   
   
   // fetch data
   func update() {
-
+    
     UserStatisticsRequest(userIDs: [user.id]).send { result in
       switch result {
       case .success(let userStats):
@@ -225,7 +234,7 @@ extension UserDetailViewController{
     
     let sectionIDs = itemsBySection.keys.sorted()
     
-
+    
     dataSource.applySnapshotUsing(sectionIDs: sectionIDs, itemsBySection: itemsBySection)
   }
   
@@ -250,8 +259,9 @@ extension UserDetailViewController{
                                               category, indexPath) in
       let header = collectionView.dequeueReusableSupplementaryView(ofKind: self.headerKind, withReuseIdentifier: self.headerIdentifier, for: indexPath) as! NamedSectionHeaderView
       
-      let section =
-        dataSource.snapshot().sectionIdentifiers[indexPath.section]
+      let section = dataSource.snapshot().sectionIdentifiers[indexPath.section]
+      
+      header.backgroundColor = section.sectionColor
       
       switch section {
       case .leading:
@@ -273,10 +283,10 @@ extension UserDetailViewController{
     let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
     let item = NSCollectionLayoutItem(layoutSize: itemSize)
     item.contentInsets = NSDirectionalEdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-
+    
     let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(44))
     let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
-  
+    
     let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(36))
     let sectionHeader =  NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: "header", alignment: .top)
     sectionHeader.pinToVisibleBounds = true

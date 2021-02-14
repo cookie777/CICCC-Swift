@@ -10,6 +10,7 @@ import UIKit
 private let reuseIdentifier = "Cell"
 
 class LogHabitCollectionViewController: HabitCollectionViewController  {
+
   
   override func createLayout() -> UICollectionViewCompositionalLayout {
     return UICollectionViewCompositionalLayout { (sectionIndex, environment) -> NSCollectionLayoutSection? in
@@ -117,6 +118,22 @@ class LogHabitCollectionViewController: HabitCollectionViewController  {
     guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
     let loggedHabit = LoggedHabit(userID: Settings.shared.currentUser.id, habitName:item.habit.name, timestamp: Date())
     LogHabitRequest(trackedEvent: loggedHabit).send { _ in }
+    
+    collectionView.deselectItem(at: indexPath, animated: true)
   }
+  
+  override func configureCell(_ cell: PrimarySecondaryTextCollectionViewCell, withItem item: ViewModel.Item) {
+    
+    cell.primaryTextLabel.text = item.habit.name
+    cell.layer.cornerRadius = 8
+    if Settings.shared.favoriteHabits.contains(item.habit) {
+      cell.backgroundColor = favoriteHabitColor
+    } else {
+      cell.backgroundColor = .systemGray6
+    }
+  }
+  
+
+  
 }
 

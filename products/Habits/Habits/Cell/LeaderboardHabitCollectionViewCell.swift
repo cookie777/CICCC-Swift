@@ -11,7 +11,7 @@ class LeaderboardHabitCollectionViewCell: UICollectionViewCell {
   let habitNameLabel: UILabel = {
     let lb = UILabel()
     lb.translatesAutoresizingMaskIntoConstraints = false
-    lb.font = UIFont.systemFont(ofSize: 24, weight: .semibold)
+    lb.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
     lb.textAlignment = .left
     return lb
   }()

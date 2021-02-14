@@ -7,9 +7,22 @@
 
 import UIKit
 
-class FollowedUserViewCell: PrimarySecondaryTextCollectionViewCell {
+class FollowedUserCollectionViewCell: PrimarySecondaryTextCollectionViewCell {
+  
+  let separatorLineView = UIView()
+
   override init(frame: CGRect) {
     super.init(frame: frame)
+    
+    contentView.addSubview(separatorLineView)
+    separatorLineView.translatesAutoresizingMaskIntoConstraints = false
+    separatorLineView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+    separatorLineView.heightAnchor.constraint(equalToConstant: 1/UITraitCollection.current.displayScale).isActive = true
+    separatorLineView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.96).isActive = true
+    separatorLineView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
+    separatorLineView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
+    
+    
     primaryTextLabel.textAlignment = .left
     primaryTextLabel.anchors(
       topAnchor: contentView.topAnchor,

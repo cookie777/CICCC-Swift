@@ -42,7 +42,6 @@ struct HabitStatisticsRequest: APIRequest {
   }
 }
 
-
 /// fetch user Statistics
 struct UserStatisticsRequest: APIRequest {
   typealias Response = [UserStatistics]
@@ -59,7 +58,6 @@ struct UserStatisticsRequest: APIRequest {
     }
   }
 }
-
 
 /// fetch habit lead Statistics
 struct HabitLeadStatisticsRequest: APIRequest {

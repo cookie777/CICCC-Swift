@@ -40,7 +40,8 @@ class UserCollectionViewController: UICollectionViewController {
 extension UserCollectionViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
-    collectionView.backgroundColor = .systemGreen
+    collectionView.backgroundColor = .systemBackground
+    
     
     // Register cell classes
     self.collectionView!.register(UserCollectionViewCell.self, forCellWithReuseIdentifier: PrimarySecondaryTextCollectionViewCell.UserReusableIdentifier)
@@ -71,11 +72,16 @@ extension UserCollectionViewController {
   
   func createDataSource() -> DataSourceType {
     
+    
     let dataSource = DataSourceType(collectionView: collectionView, cellProvider: { collectionView, indexPath, item in
       
       let cell = collectionView.dequeueReusableCell(withReuseIdentifier: UserCollectionViewCell.UserReusableIdentifier, for: indexPath) as! UserCollectionViewCell
       
       cell.primaryTextLabel.text = item.user.name
+      
+      cell.contentView.layer.cornerRadius = 8
+      cell.contentView.backgroundColor = item.user.color?.uiColor ?? UIColor.systemGray4
+      
       return cell
     })
     

@@ -9,6 +9,7 @@ import UIKit
 
 private let sectionHeaderKind = "SectionHeader"
 private let sectionHeaderIdentifier = "HeaderView"
+let favoriteHabitColor = UIColor(hue: 0.15, saturation: 1, brightness: 0.9, alpha: 1)
 
 
 // MARK: - Define Model and View model
@@ -34,6 +35,15 @@ class HabitCollectionViewController: UICollectionViewController {
       
       case favorites
       case category(_ category: Category)
+      
+      var sectionColor: UIColor {
+        switch self {
+        case .favorites:
+          return favoriteHabitColor
+        case .category(let category):
+          return category.color.uiColor
+        }
+      }
     }
     
     struct Item: Hashable, Equatable, Comparable {
@@ -60,12 +70,13 @@ class HabitCollectionViewController: UICollectionViewController {
   var dataSource  : DataSourceType!
   
   
+  
   // MARK: - Create layout
   // To override later, I put it here.
   func createLayout() -> UICollectionViewCompositionalLayout {
     
     return UICollectionViewCompositionalLayout{(sectionIndex, layoutEnvironment) -> NSCollectionLayoutSection? in
-
+      
       let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),heightDimension: .fractionalHeight(1))
       let item = NSCollectionLayoutItem(layoutSize: itemSize)
       let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(44))
@@ -75,7 +86,7 @@ class HabitCollectionViewController: UICollectionViewController {
       let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(36))
       let sectionHeader =  NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: sectionHeaderKind, alignment: .top)
       sectionHeader.pinToVisibleBounds = true
-
+      
       let section = NSCollectionLayoutSection(group: group)
       section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
       section.boundarySupplementaryItems = [sectionHeader]
@@ -83,6 +94,10 @@ class HabitCollectionViewController: UICollectionViewController {
       return section
     }
     
+  }
+  // Config cell
+  func configureCell(_ cell: PrimarySecondaryTextCollectionViewCell, withItem item: ViewModel.Item) {
+    cell.primaryTextLabel.text = item.habit.name
   }
   
 }
@@ -96,6 +111,7 @@ extension HabitCollectionViewController {
     
     // Register cell classes
     self.collectionView!.register(HabitCollectionViewCell.self, forCellWithReuseIdentifier: HabitCollectionViewCell.HabitReusableIdentifier)
+    self.collectionView!.register(SelectionIndicatingPrimarySecondaryTextCollectionViewCell.self, forCellWithReuseIdentifier: SelectionIndicatingPrimarySecondaryTextCollectionViewCell.SelectionIndicatingPrimarySecondaryTextIdentifier)
     
     self.collectionView!.register(NamedSectionHeaderView.self, forSupplementaryViewOfKind: sectionHeaderKind , withReuseIdentifier: sectionHeaderIdentifier)
     
@@ -182,16 +198,25 @@ extension HabitCollectionViewController {
     dataSource.applySnapshotUsing(sectionIDs: setionIDs, itemsBySection: itemsBySection)
   }
   
+
+
   func createDataSource() -> DataSourceType {
     
-    // Config cell
+    
     let dataSource = DataSourceType(collectionView: collectionView) {
       (collectionView, indexPath, item) in
-      
-      let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HabitCollectionViewCell.HabitReusableIdentifier, for: indexPath) as! HabitCollectionViewCell
-      
-      cell.primaryTextLabel.text = item.habit.name
-      return cell
+     
+
+      switch self{
+      case is LogHabitCollectionViewController:
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SelectionIndicatingPrimarySecondaryTextCollectionViewCell.SelectionIndicatingPrimarySecondaryTextIdentifier, for: indexPath) as! SelectionIndicatingPrimarySecondaryTextCollectionViewCell
+        self.configureCell(cell, withItem: item)
+        return cell
+      default:
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HabitCollectionViewCell.HabitReusableIdentifier, for: indexPath) as! HabitCollectionViewCell
+        self.configureCell(cell, withItem: item)
+        return cell
+      }
     }
     
     // Config header(footer) view
@@ -199,7 +224,7 @@ extension HabitCollectionViewController {
       let header = collectionView.dequeueReusableSupplementaryView(ofKind: sectionHeaderKind, withReuseIdentifier: sectionHeaderIdentifier, for: indexPath) as! NamedSectionHeaderView
       
       let section = dataSource.snapshot().sectionIdentifiers[indexPath.section]
-      
+      header.backgroundColor = section.sectionColor
       switch section {
       case .favorites:
         header.nameLabel.text = "Favorites"

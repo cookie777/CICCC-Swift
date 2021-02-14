@@ -67,7 +67,7 @@ class HomeCollectionViewController: UICollectionViewController {
     collectionView.backgroundColor = .systemBackground
     // Register cell classes
     self.collectionView!.register(LeaderboardHabitCollectionViewCell.self, forCellWithReuseIdentifier: leaderboardReuseIdentifier)
-    self.collectionView!.register(FollowedUserViewCell.self, forCellWithReuseIdentifier: FollowedUserReuseIdentifier)
+    self.collectionView!.register(FollowedUserCollectionViewCell.self, forCellWithReuseIdentifier: FollowedUserReuseIdentifier)
     
     fetchUserAndHabit()
     dataSource = createDataSource()
@@ -324,9 +324,16 @@ extension HomeCollectionViewController{
         cell.secondaryLabel.text = secondaryUserRanking
         return cell
       case .followedUser(let user, let message):
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FollowedUserReuseIdentifier, for: indexPath) as! FollowedUserViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FollowedUserReuseIdentifier, for: indexPath) as! FollowedUserCollectionViewCell
         cell.primaryTextLabel.text = user.name
         cell.secondaryTextLabel.text = message
+        
+        if indexPath.item == collectionView.numberOfItems(inSection: indexPath.section) - 1 {
+            cell.separatorLineView.isHidden = true
+        } else {
+            cell.separatorLineView.isHidden = false
+        }
+        
         return cell
       }
     }
@@ -341,6 +348,12 @@ extension HomeCollectionViewController{
       case .leaderboardGroupBackground:
         view.backgroundColor = UIColor(hue: 0.65, saturation: 0.1, brightness: 0.95, alpha: 1)
         view.layer.cornerRadius = 12
+        view.layer.shadowRadius = 3
+        view.layer.shadowColor = UIColor.systemGray3.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 2)
+        view.layer.shadowOpacity = 1
+        view.layer.masksToBounds = false
+        view.layer.zPosition = -1
         return view
       case .leaderboardSectionHeader:
         let header = view as! NamedSectionHeaderView
@@ -377,24 +390,27 @@ extension HomeCollectionViewController{
         let verticalTrioSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.75), heightDimension: .fractionalWidth(0.75))
         let leaderboardVerticalTrio = NSCollectionLayoutGroup.vertical(layoutSize: verticalTrioSize, subitem: leaderboardItem, count: 3)
         
+        // group + supplementary
+        let groupDecorationSize = NSCollectionLayoutSize(widthDimension:.fractionalWidth(0.77), heightDimension: .fractionalWidth(0.77))
+        let groupAnchor = NSCollectionLayoutAnchor(edges: .all, absoluteOffset: CGPoint(x: 0, y: 0))
+        let groupDecoration = NSCollectionLayoutSupplementaryItem(layoutSize: groupDecorationSize, elementKind: SupplementaryView.leaderboardGroupBackground.viewKind,containerAnchor: groupAnchor)
         
         
-        // group + supplemetary
-        let groupDecorationSize = NSCollectionLayoutSize(widthDimension:
-           .fractionalWidth(0.77), heightDimension: .fractionalWidth(0.77))
-        let groupAnchor = NSCollectionLayoutAnchor(edges: .all,
-           absoluteOffset: CGPoint(x: 0, y: 0))
-        let groupDecoration = NSCollectionLayoutSupplementaryItem(layoutSize:
-           groupDecorationSize, elementKind:
-           SupplementaryView.leaderboardGroupBackground.viewKind,
-           containerAnchor: groupAnchor)
-        
-        
+        leaderboardVerticalTrio.supplementaryItems = [groupDecoration]
         
         
         // Section
         let leaderboardSection = NSCollectionLayoutSection(group: leaderboardVerticalTrio)
         
+//        // Section supplementary
+        let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(80))
+        let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: SupplementaryView.leaderboardSectionHeader.viewKind, alignment: .top)
+        header.contentInsets = NSDirectionalEdgeInsets(top: 12, leading: 20, bottom: 0, trailing: 0)
+
+        let background =  NSCollectionLayoutDecorationItem.background(elementKind: SupplementaryView.leaderboardBackground.viewKind)
+
+        leaderboardSection.boundarySupplementaryItems = [header]
+        leaderboardSection.decorationItems = [background]
         
         leaderboardSection.interGroupSpacing = 20
         leaderboardSection.contentInsets = NSDirectionalEdgeInsets(top: 20, leading: 0, bottom: 0, trailing: 0)
@@ -402,22 +418,9 @@ extension HomeCollectionViewController{
         leaderboardSection.orthogonalScrollingBehavior = .groupPagingCentered
         leaderboardSection.contentInsets = NSDirectionalEdgeInsets(top: 12, leading: 0, bottom: 20, trailing: 0)
         
-        // Section supplementary
-        let headerSize = NSCollectionLayoutSize(widthDimension:
-           .fractionalWidth(1), heightDimension: .absolute(80))
-        let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize:
-           headerSize, elementKind:
-           SupplementaryView.leaderboardSectionHeader.viewKind,
-           alignment: .top)
-        header.contentInsets = NSDirectionalEdgeInsets(top: 12, leading: 20,
-           bottom: 0, trailing: 0)
-        
-        let background =  NSCollectionLayoutDecorationItem.background(elementKind: SupplementaryView.leaderboardBackground.viewKind)
-        
-        leaderboardSection.boundarySupplementaryItems = [header]
-        leaderboardSection.decorationItems = [background]
+ 
 
-        leaderboardVerticalTrio.supplementaryItems = [groupDecoration]
+        
         
         return leaderboardSection
       case .followedUsers:
@@ -433,7 +436,7 @@ extension HomeCollectionViewController{
            .fractionalWidth(1), heightDimension: .absolute(60))
         let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: SupplementaryView.followedUsersSectionHeader.viewKind,
            alignment: .top)
-      
+        followedUserSection.interGroupSpacing = 5
         followedUserSection.boundarySupplementaryItems = [header]
         return followedUserSection
       }
@@ -510,7 +513,12 @@ extension HomeCollectionViewController{
 }
 
 class SectionBackgroundView: UICollectionReusableView {
-  override func didMoveToSuperview() {
+  override init(frame: CGRect) {
+    super.init(frame: frame)
     backgroundColor = .systemGray6
+  }
+  
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
   }
 }

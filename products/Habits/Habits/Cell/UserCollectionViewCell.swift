@@ -13,9 +13,7 @@ class UserCollectionViewCell: PrimarySecondaryTextCollectionViewCell {
     primaryTextLabel.textAlignment = .center
     primaryTextLabel.matchParent()
     primaryTextLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-    self.backgroundColor = .magenta
-//    self.constraintHeight(equalToConstant: 128)
-//    self.constraintWidth(equalToConstant: 128)
+    
   }
   
   required init?(coder: NSCoder) {
