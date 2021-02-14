@@ -11,7 +11,7 @@ private let sectionHeaderKind = "SectionHeader"
 private let sectionHeaderIdentifier = "HeaderView"
 
 
-// MARK: - Defin@objc @objc e Model and View model
+// MARK: - Define Model and View model
 class HabitCollectionViewController: UICollectionViewController {
   // Rename dataType as simple
   typealias DataSourceType = UICollectionViewDiffableDataSource<ViewModel.Section, ViewModel.Item>

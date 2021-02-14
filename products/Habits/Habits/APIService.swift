@@ -8,6 +8,8 @@
 import UIKit
 
 
+
+
 /// fetch habit
 struct HabitRequest: APIRequest {
   typealias Response = [String: Habit]
@@ -87,4 +89,9 @@ struct LogHabitRequest: APIRequest {
     encoder.dateEncodingStrategy = .iso8601
     return try! encoder.encode(trackedEvent)
   }
+}
+
+struct CombinedStatisticsRequest: APIRequest {
+    typealias Response = CombinedStatistics
+    var path: String { "/combinedStats" }
 }

@@ -126,3 +126,19 @@ extension UserCollectionViewController{
     collectionView.deselectItem(at: indexPath, animated: false)
   }
 }
+
+// MARK: - Config Toggle
+extension UserCollectionViewController{
+  override func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+    let config = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { (elements) -> UIMenu? in
+      guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return nil }
+      
+      let favoriteToggle = UIAction(title: item.isFollowed ? "Unfollow" : "Follow") { (action) in
+        Settings.shared.toggleFollowed(user: item.user)
+        self.updateCollectionView()
+      }
+      return UIMenu(title: "", image: nil, identifier: nil, options: [], children: [favoriteToggle])
+    }
+    return config
+  }
+}
