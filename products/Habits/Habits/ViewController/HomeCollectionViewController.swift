@@ -515,7 +515,7 @@ extension HomeCollectionViewController{
 class SectionBackgroundView: UICollectionReusableView {
   override init(frame: CGRect) {
     super.init(frame: frame)
-    backgroundColor = .systemGray6
+    backgroundColor = .systemBackground
   }
   
   required init?(coder: NSCoder) {

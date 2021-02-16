@@ -79,7 +79,7 @@ extension APIRequest where Response == UIImage {
   func send(completion: @escaping (Result<Self.Response, Error>) -> Void) {
     
     URLSession.shared.dataTask(with: request) { (data, _, error) in
-      
+    
       if let data = data,let image = UIImage(data: data) {
         completion(.success(image))
       } else if let error = error {
