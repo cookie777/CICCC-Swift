@@ -7,23 +7,34 @@
 //
 
 import UIKit
+import CoreData
 
-class TodosTableViewController: UITableViewController {
+class TodosTableViewController: FetchedResultsTableViewController{
   
   @IBOutlet var deleteButton: UIBarButtonItem!
   var todoList: TodoList = TodoList()
+  
+  var container: NSPersistentContainer = AppDelegate.persistentContainer
+  lazy var fetchedResultsController: NSFetchedResultsController<ManagedTodoItem> = {
+    let request: NSFetchRequest<ManagedTodoItem> = ManagedTodoItem.fetchRequest()
+    request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true, selector: #selector(NSString.localizedCaseInsensitiveCompare(_:)))]
+    
+    let frc = NSFetchedResultsController<ManagedTodoItem>(
+      fetchRequest: request,
+      managedObjectContext: container.viewContext,
+      sectionNameKeyPath: "priority",
+      cacheName: nil
+    )
+    return frc
+  }()
+
   
   override func viewDidLoad() {
     super.viewDidLoad()
     navigationController?.navigationBar.prefersLargeTitles = true
     navigationItem.leftBarButtonItem = editButtonItem
     tableView.allowsMultipleSelectionDuringEditing = true
-    // removing bar button item dynamically
-    // navigationItem.rightBarButtonItems?.remove(at: 1)
-    
-    // hiding delete bar buttom item
-//    deleteButton.isEnabled = false
-//    deleteButton.tintColor = .clear
+
   }
   
   override func setEditing(_ editing: Bool, animated: Bool) {
