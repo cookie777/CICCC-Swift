@@ -18,7 +18,7 @@ class TodosTableViewController: FetchedResultsTableViewController{
   lazy var fetchedResultsController: NSFetchedResultsController<ManagedTodoItem> = {
     let request: NSFetchRequest<ManagedTodoItem> = ManagedTodoItem.fetchRequest()
 
-    request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true, selector: #selector(NSString.localizedCaseInsensitiveCompare(_:)))]
+//    request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true, selector: #selector(NSString.localizedCaseInsensitiveCompare(_:)))]
     
     let frc = NSFetchedResultsController<ManagedTodoItem>(
       fetchRequest: request,
