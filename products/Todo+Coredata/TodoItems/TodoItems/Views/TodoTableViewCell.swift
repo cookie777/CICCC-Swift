@@ -11,4 +11,6 @@ import UIKit
 class TodoTableViewCell: UITableViewCell {
   @IBOutlet weak var checkmark: UILabel!
   @IBOutlet weak var todoLabel: UILabel!
+  
+  static let identifier = "TodoItem"
 }

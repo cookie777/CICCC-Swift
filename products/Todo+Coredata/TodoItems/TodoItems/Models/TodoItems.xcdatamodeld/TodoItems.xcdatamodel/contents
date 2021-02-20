@@ -7,6 +7,6 @@
         <attribute name="todoDescription" optional="YES" attributeType="String"/>
     </entity>
     <elements>
-        <element name="ManagedTodoItem" positionX="-63" positionY="-18" width="128" height="14"/>
+        <element name="ManagedTodoItem" positionX="-63" positionY="-18" width="128" height="89"/>
     </elements>
 </model>

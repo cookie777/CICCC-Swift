@@ -3,7 +3,7 @@
 //  TodoItems
 //
 //  Created by Derrick Park on 2018-10-11.
-//  Copyright © 2018 Derrick Park. All rights reserved.
+//  Copyright © 2018 Derrick PaKrk. All rights reserved.
 //
 
 import UIKit

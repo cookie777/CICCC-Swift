@@ -12,11 +12,12 @@ import CoreData
 class TodosTableViewController: FetchedResultsTableViewController{
   
   @IBOutlet var deleteButton: UIBarButtonItem!
-  var todoList: TodoList = TodoList()
+
   
   var container: NSPersistentContainer = AppDelegate.persistentContainer
   lazy var fetchedResultsController: NSFetchedResultsController<ManagedTodoItem> = {
     let request: NSFetchRequest<ManagedTodoItem> = ManagedTodoItem.fetchRequest()
+
     request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true, selector: #selector(NSString.localizedCaseInsensitiveCompare(_:)))]
     
     let frc = NSFetchedResultsController<ManagedTodoItem>(
@@ -25,25 +26,24 @@ class TodosTableViewController: FetchedResultsTableViewController{
       sectionNameKeyPath: "priority",
       cacheName: nil
     )
+    
+    
+    frc.delegate = self
     return frc
   }()
-
+  
   
   override func viewDidLoad() {
     super.viewDidLoad()
     navigationController?.navigationBar.prefersLargeTitles = true
     navigationItem.leftBarButtonItem = editButtonItem
     tableView.allowsMultipleSelectionDuringEditing = true
-
+    try? fetchedResultsController.performFetch()
   }
   
   override func setEditing(_ editing: Bool, animated: Bool) {
     super.setEditing(editing, animated: animated)
     tableView.setEditing(editing, animated: animated)
-  }
-  
-  private func priorityForSectionIndex(_ index: Int) -> TodoList.Priority? {
-    return TodoList.Priority(rawValue: index)
   }
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -54,10 +54,8 @@ class TodosTableViewController: FetchedResultsTableViewController{
     } else if segue.identifier == "EditItemSegue" {
       if let addItemVC = segue.destination as? AddItemTableViewController {
         if let cell = sender as? UITableViewCell,
-          let indexPath = tableView.indexPath(for: cell),
-          let priority = priorityForSectionIndex(indexPath.section) {
-          let item = todoList.todoList(for: priority)[indexPath.row]
-          addItemVC.itemToEdit = item
+           let indexPath = tableView.indexPath(for: cell){
+          addItemVC.itemToEdit = fetchedResultsController.object(at: indexPath)
           addItemVC.delegate = self
         }
       }
@@ -69,16 +67,9 @@ class TodosTableViewController: FetchedResultsTableViewController{
     if var selectedRows = tableView.indexPathsForSelectedRows {
       selectedRows.sort { $0.row > $1.row }
       for indexPath in selectedRows {
-        if let priority = priorityForSectionIndex(indexPath.section) {
-          let priorityTodos = todoList.todoList(for: priority)
-          let item = priorityTodos[indexPath.row]
-          todoList.remove(item: item, from: priority, at: indexPath.row)
-        }
+        container.viewContext.delete(fetchedResultsController.object(at: indexPath))
       }
-      // remove from tableview
-      tableView.beginUpdates()
-      tableView.deleteRows(at: selectedRows, with: .automatic)
-      tableView.endUpdates()
+      try? container.viewContext.save()
     }
     
   }
@@ -86,27 +77,25 @@ class TodosTableViewController: FetchedResultsTableViewController{
   // MARK: - TableViewDataSource
   
   override func numberOfSections(in tableView: UITableView) -> Int {
-    return TodoList.Priority.allCases.count
+    return fetchedResultsController.sections?.count ?? 1
   }
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    // number of rows
-    if let priority = priorityForSectionIndex(section) {
-      return todoList.todoList(for: priority).count
+    if let sections = fetchedResultsController.sections, sections.count > 0 {
+      return sections[section].numberOfObjects
+    } else {
+      return 0
     }
-    return 0
   }
   
+  // Definition of cells
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     // how each cell looks like
-    let cell = tableView.dequeueReusableCell(withIdentifier: "TodoItem", for: indexPath)
-    // checkmark, todoLabel
-    if let priority = priorityForSectionIndex(indexPath.section) {
-      let items = todoList.todoList(for: priority)
-      let item = items[indexPath.row]
-      configureCheckmark(for: cell, with: item)
-      configureTodoLabel(for: cell, with: item)
-    }
+    let cell = tableView.dequeueReusableCell(withIdentifier: TodoTableViewCell.identifier, for: indexPath) as! TodoTableViewCell
+    let todoItem = fetchedResultsController.object(at: indexPath)
+
+    cell.checkmark.text = todoItem.isCompleted ? "✓" : ""
+    cell.todoLabel.text = todoItem.title
     
     return cell
     
@@ -114,114 +103,73 @@ class TodosTableViewController: FetchedResultsTableViewController{
   
   // MARK: - TableViewDelegate
   
-  override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-    var title: String? = nil
-    if let priority = priorityForSectionIndex(section) {
-      switch priority {
-        case .high:
-          title = "High Priority"
-        case .medium:
-          title = "Medium Priority"
-        case .low:
-          title = "Low Priority"
+  // section title
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+
+      switch fetchedResultsController.sections?[section].name{
+      case "0":
+        return "High"
+      case "1":
+        return "Medium"
+      case "2":
+        return "Low"
+      default:
+        return nil
       }
     }
-    return title
-  }
   
+  // When the cell is selected
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    if tableView.isEditing {
-      return
-    }
-    // get the cell selected
-    if let cell = tableView.cellForRow(at: indexPath) as? TodoTableViewCell {
-      // change the checked property of the TodoItem from model
-      if let priority = priorityForSectionIndex(indexPath.section) {
-        let items = todoList.todoList(for: priority)
-        let item = items[indexPath.row]
-        item.toggleCheckmark()
-        // uncheck(check) the checkmark from the cell
-        configureCheckmark(for: cell, with: item)
-        // deselect the row (no-highlighting)
-        tableView.deselectRow(at: indexPath, animated: true)
-      }
-    }
+    if tableView.isEditing { return }
+    // get target ManagedObject from indexPath
+    let todoItem = fetchedResultsController.object(at: indexPath)
+    // update object
+    todoItem.isCompleted.toggle()
+    // save it
+    try? container.viewContext.save()
+    // re-fetch and update fetchedResultsController and related UI
+    tableView.deselectRow(at: indexPath, animated: true)
   }
   
   override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
     return 70
   }
   
-  private func configureCheckmark(for cell: UITableViewCell, with item: TodoItem) {
-    if let cell = cell as? TodoTableViewCell {
-      cell.checkmark.text = item.checked ? "✓" : ""
-    }
-  }
-  
-  private func configureTodoLabel(for cell: UITableViewCell, with item: TodoItem) {
-    if let cell = cell as? TodoTableViewCell {
-      cell.todoLabel.text = item.text
-    }
-  }
-  
+  // Deletion
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-    // remove from the model
-    if let priority = priorityForSectionIndex(indexPath.section) {
-      let item = todoList.todoList(for: priority)[indexPath.row]
-      todoList.remove(item: item, from: priority, at: indexPath.row)
-      // update the tableview
-      tableView.deleteRows(at: [indexPath], with: .automatic)
-    }
+
+    container.viewContext.delete(fetchedResultsController.object(at: indexPath))
+    try? container.viewContext.save()
   }
   
+  // If you tap accessoryButton
   override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
     if tableView.isEditing { return }
     performSegue(withIdentifier: "EditItemSegue", sender: tableView.cellForRow(at: indexPath))
   }
   
-  override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-    // change model
-    if let srcPriority = priorityForSectionIndex(sourceIndexPath.section),
-      let destPriority = priorityForSectionIndex(destinationIndexPath.section) {
-      
-      let item = todoList.todoList(for: srcPriority)[sourceIndexPath.row]
-      todoList.move(item: item, from: srcPriority, at: sourceIndexPath, to: destPriority, at: destinationIndexPath)
-    }
-    
-    // update tableview
-    tableView.reloadData()
-  }
-  
 }
 
+
+// MARK: - AddEdit Delegate
 extension TodosTableViewController: AddItemViewControllerDelegate {
+  
   func addItemDidCancel() {
     navigationController?.popViewController(animated: true)
   }
   
-  func addItemDidFinishAdding(_ item: TodoItem) {
+  func addItemDidFinishAdding(_ item: ManagedTodoItem) {
     navigationController?.popViewController(animated: true)
-    // update model
-    todoList.addTodo(item: item, for: .medium)
-    
-    // update tableview
-    let index = todoList.todoList(for: .medium).count - 1
-    let indexPath = IndexPath(row: index, section: TodoList.Priority.medium.rawValue)
-    tableView.insertRows(at: [indexPath], with: .automatic)
+    // add new item
+    _ = try? ManagedTodoItem.findOrCreateItem(matching: item, in: container.viewContext)
+    try? container.viewContext.save()
+
   }
   
-  func addItemDidFinishEditing(_ item: TodoItem) {
-    // what is the index of "item" from todos array.
-    for priority in TodoList.Priority.allCases {
-      var priorityArray = todoList.todoList(for: priority)
-      if let index = priorityArray.firstIndex(of: item) {
-        priorityArray[index] = item
-        let indexPath = IndexPath(row: index, section: priority.rawValue)
-        if let cell = tableView.cellForRow(at: indexPath) {
-          configureTodoLabel(for: cell, with: item)
-        }
-      }
-    }
+  func addItemDidFinishEditing(_ item: ManagedTodoItem) {
+    try? container.viewContext.save()
     navigationController?.popViewController(animated: true)
   }
 }
+
+

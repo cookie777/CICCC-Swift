@@ -11,8 +11,8 @@ import CoreData
 
 protocol AddItemViewControllerDelegate: class {
   func addItemDidCancel()
-  func addItemDidFinishAdding(_ item: TodoItem)
-  func addItemDidFinishEditing(_ item: TodoItem)
+  func addItemDidFinishAdding(_ item: ManagedTodoItem)
+  func addItemDidFinishEditing(_ item: ManagedTodoItem)
 }
 
 class AddItemTableViewController: UITableViewController {
@@ -21,7 +21,7 @@ class AddItemTableViewController: UITableViewController {
   @IBOutlet weak var cancelBarButton: UIBarButtonItem!
   @IBOutlet weak var doneBarButton: UIBarButtonItem!
   weak var delegate: AddItemViewControllerDelegate?
-  weak var itemToEdit: TodoItem?
+  weak var itemToEdit: ManagedTodoItem?
   
   @IBAction func cancel(_ sender: UIBarButtonItem) {
     delegate?.addItemDidCancel()
@@ -29,27 +29,48 @@ class AddItemTableViewController: UITableViewController {
   
   @IBAction func done(_ sender: UIBarButtonItem) {
     if let item = itemToEdit, let text = textField.text {
-      item.text = text
+      item.title = text
+      item.priority = Int16(segmentController.selectedSegmentIndex)
       delegate?.addItemDidFinishEditing(item)
     } else {
       if let text = textField.text {
-        let newItem = TodoItem()
-        newItem.text = text
-        newItem.checked = false
+        let newItem = ManagedTodoItem(context: AppDelegate.persistentContainer.viewContext)
+        newItem.title = text
+        newItem.isCompleted = false
+        newItem.priority = Int16(segmentController.selectedSegmentIndex)
         delegate?.addItemDidFinishAdding(newItem)
       }
     }
   }
+  
+  var segmentController : UISegmentedControl = {
+    let s = UISegmentedControl()
+    s.translatesAutoresizingMaskIntoConstraints = false
+    s.insertSegment(withTitle: "High", at: 0, animated: false)
+    s.insertSegment(withTitle: "Medium", at: 1, animated: false)
+    s.insertSegment(withTitle: "Low", at: 2, animated: false)
+    s.selectedSegmentIndex = 1
+    return s
+  }()
   
   override func viewDidLoad() {
     super.viewDidLoad()
     navigationItem.largeTitleDisplayMode = .never
     if let item = itemToEdit {
       title = "Edit Todo Item"
-      textField.text = item.text
+      textField.text = item.title
       doneBarButton.isEnabled = true
+      segmentController.selectedSegmentIndex = Int(item.priority)
     }
-    
+    tableView.tableHeaderView = segmentController
+    tableView.addSubview(segmentController)
+    segmentController.anchors(
+      topAnchor: nil,
+      leadingAnchor: tableView.leadingAnchor,
+      trailingAnchor: tableView.trailingAnchor,
+      bottomAnchor: nil
+    )
+    segmentController.widthAnchor.constraint(equalTo: tableView.widthAnchor, multiplier: 1.0).isActive = true
   }
   
   override func viewWillAppear(_ animated: Bool) {
