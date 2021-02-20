@@ -17,9 +17,10 @@ class TodosTableViewController: FetchedResultsTableViewController{
   var container: NSPersistentContainer = AppDelegate.persistentContainer
   lazy var fetchedResultsController: NSFetchedResultsController<ManagedTodoItem> = {
     let request: NSFetchRequest<ManagedTodoItem> = ManagedTodoItem.fetchRequest()
+//    request.predicate = NSPredicate(format: "objectID = %@", "")
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true, selector: #selector(NSString.localizedCaseInsensitiveCompare(_:)))]
+//    request.sortDescriptors = []
 
-//    request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true, selector: #selector(NSString.localizedCaseInsensitiveCompare(_:)))]
-    
     let frc = NSFetchedResultsController<ManagedTodoItem>(
       fetchRequest: request,
       managedObjectContext: container.viewContext,
