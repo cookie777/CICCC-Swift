@@ -93,7 +93,7 @@ class CollectionViewController: UICollectionViewController, UISearchControllerDe
         // Collection View config : Layout
         collectionView.backgroundColor = .label
         activeLayout = .grid // This will automatically set leftButton and layout.
-        collectionView.allowsMultipleSelection = true
+        collectionView.allowsMultipleSelection = false
         // Scroll to top by default
         collectionView.setContentOffset(.zero, animated: false)
         
@@ -519,6 +519,5 @@ extension CollectionViewController{
     }
 
 }
-
 
 
